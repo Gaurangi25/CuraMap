@@ -1,0 +1,35 @@
+.env
+
+What does dotenv.config() do?
+It reads secret settings from your .env file and makes them usable in your code
+
+You have a file called .env:
+
+MONGO_URI=your_secret_database_url
+
+Then in your code:
+import dotenv from 'dotenv';
+dotenv.config(); // This loads the .env file
+
+console.log(process.env.MONGO_URI); // Now it works
+
+_____________________________________________________
+
+Mongoose 
+
+useNewUrlParser: true
+Tells Mongoose to use the modern, more reliable MongoDB URL parser.
+Required for newer-style URLs like this:
+mongodb+srv://...
+
+useUnifiedTopology: true
+Enables the new MongoDB driver engine for better server discovery and monitoring.
+Prevents a lot of older bugs and warnings.
+
+Both are valid
+1. mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+2. mongoose.connect(process.env.MONGO_URI);
