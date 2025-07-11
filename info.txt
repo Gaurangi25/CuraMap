@@ -93,3 +93,29 @@ jwt.sign(payload, secretKey, options)
   { expiresIn: "1h" }
   This means the user’s login session will automatically expire in 1 hour — for security.
 
+____________________________________________________
+
+Google Map API
+
+<GoogleMap
+  zoom={12}
+/>
+
+zoom={12} — What It Means
+The zoom prop controls how close the map is when it loads.
+
+📊 Zoom Levels Cheat Sheet:
+Zoom Level	What You See	Typical Use
+1–3	Entire world / continents	Global view
+5–6	Large countries	Country view
+10–12	City level	🏙️ City map (like Delhi, Mumbai)
+15	Streets and local areas	Neighborhood view
+18–20	Buildings, shops, very detailed	Floorplans, pinpoint locations
+
+✅ So zoom={12} means:
+"Show the city level view, where roads and local areas are visible, but not ultra-detailed buildings."
+
+mapContainerStyle → tells it how big to draw
+center → where the map starts
+zoom={12} → how zoomed in (1=world, 20=building)
+<Marker /> → puts a pin on the map

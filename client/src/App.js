@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AddHospitalForm from "./components/AddHospitalForm";
 import HospitalDetails from "./components/HospitalDetails";
+import HospitalMap from "./components/HospitalMap";
 import "./index.css";
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
         </button>
       </div>
 
+      <HospitalMap />
       <HospitalDetails />
       <AddHospitalForm />
     </div>
