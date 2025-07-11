@@ -13,6 +13,7 @@ useEffect() → to fetch data when component loads
 fetch() or axios → to call the API
 
 */
+
 function HospitalDetails() {
   const [hospitals, setHospitals] = useState([]);
 

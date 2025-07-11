@@ -1,0 +1,33 @@
+:root {
+  --primary-color: #1565c0;
+  --accent-color: #4caf50;
+  --text-color: #1a1a1a;
+  --bg-color: #ffffff;
+  --form-bg: #f8f9fa;
+  --border-color: #ccc;
+  --error-color: #e53935;
+
+  /* fonts styling */
+  --font-style-1: "Winky Rough", sans-serif;
+  --font-style-2: "Bungee", sans-serif;
+  --font-style-poppins: "Poppins", sans-serif;
+  --font-style-roboto: "Rooto", sans-serif;
+}
+
+body.dark-mode {
+  --primary-color: #4b99d8;
+  --accent-color: #66bb6a;
+  --text-color: #f5f5f5;
+  --bg-color: #22242c;
+  --form-bg: #242530;
+  --border-color: #444;
+  --error-color: #ef5350;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-style-1);
+  margin: 0;
+  padding: 0;
+}

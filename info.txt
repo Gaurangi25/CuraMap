@@ -68,4 +68,28 @@ Just to help you find accidental bugs early
 
 ____________________________________________________
 
+JWT TOKENS
+
+const token = jwt.sign(
+  { id: user._id, email: user.email },
+  process.env.JWT_SECRET || "defaultsecret",
+  { expiresIn: "1h" }
+);
+This line is creating a token (kind of like a digital ID card) for the logged-in user.
+
+1. This function creates a token.
+
+It takes 3 things:
+jwt.sign(payload, secretKey, options)
+
+  payload → info you want to store in the token.You're storing who the user is (their ID and email).This will be useful to identify them later when they use this token.
+
+  secretKey → used to lock (sign) the token.
+  process.env.JWT_SECRET || "defaultsecret"
+  It’s like a secret password used to sign the token.
+  Your backend will also use this later to verify that the token wasn’t changed or faked.
+
+  expiresIn → token will expire in 1 hour
+  { expiresIn: "1h" }
+  This means the user’s login session will automatically expire in 1 hour — for security.
 

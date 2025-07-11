@@ -1,0 +1,109 @@
+/* Hospital Form Body */
+.hospital-form {
+  background-color: var(--form-bg);
+  border: 1px solid var(--border-color);
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(21, 101, 192, 0.1);
+  transition: all 0.3s ease-in-out;
+  animation: fadeIn 0.6s ease forwards;
+}
+
+/* Form Title */
+.form-title {
+  font-family: var(--font-style-2);
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--primary-color);
+  font-size: 1.8rem;
+}
+
+/* Form Input Elements */
+.form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-input,
+.form-select {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-family: var(--font-style-poppins);
+  font-size: 14px;
+  transition: box-shadow 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.form-checkbox {
+  font-family: var(--font-style-poppins);
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #333;
+}
+
+/* Form Submit Button */
+.form-submit-btn {
+  padding: 12px;
+  font-size: 15px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font-style-roboto);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.form-submit-btn:hover {
+  background-color: #0d47a1;
+  transform: scale(1.02);
+}
+
+.form-submit-btn:disabled {
+  background-color: #9ebbdc;
+  cursor: not-allowed;
+}
+
+/* Form success message */
+.form-success-msg {
+  font-family: var(--font-style-poppins);
+  margin-top: 15px;
+  color: var(--accent-color);
+  text-align: center;
+  animation: slideIn 0.4s ease forwards;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
