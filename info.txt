@@ -33,3 +33,39 @@ Both are valid
 });
 
 2. mongoose.connect(process.env.MONGO_URI);
+_____________________________________________________
+
+express.router()
+
+when you want to organize routes, instead of putting everything inside app, you create small helpers using:
+
+const router = express.Router(); // a mini app just for hospitals
+
+router.get("/")       → List all hospitals
+router.post("/")      → Add a new hospital
+
+app.use("/api/hospitals", router);
+
+____________________________________________________
+
+<React.StrictMode> 
+
+Warns about unsafe lifecycle methods (used in class components — you're likely not using them yet).
+
+Highlights potential side-effect bugs in useEffect, like:
+
+Fetching data twice
+
+Accidentally causing re-renders
+
+Checks for deprecated APIs
+
+Runs some functions twice on purpose in development
+
+Not in production
+
+Just to help you find accidental bugs early
+
+____________________________________________________
+
+

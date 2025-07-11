@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import hospitalRoutes from "./routes/hospitals.js";
 
 dotenv.config();
 
@@ -14,6 +15,9 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("CuraMap is running");
 });
+
+//Using hospital routes
+app.use("/api/hospitals", hospitalRoutes);
 
 /* MongoDB Connection */
 mongoose
