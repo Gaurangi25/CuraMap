@@ -119,3 +119,57 @@ mapContainerStyle → tells it how big to draw
 center → where the map starts
 zoom={12} → how zoomed in (1=world, 20=building)
 <Marker /> → puts a pin on the map
+
+Using InfoWindow ->  clicking a marker should show hospital name + address in a pop-up.
+
+
+onCloseClick={() => setSelectedId(null)}
+When the user clicks the ❌ (close button) on the InfoWindow (the popup),
+
+→ We run this function:
+() => setSelectedId(null)
+
+It removes the current selectedId
+Which means → no marker is active now
+So the InfoWindow disappears from the map
+____________________________________________________
+
+AXIOS AND FETCH 
+
+You use Axios when you need to make HTTP requests (GET, POST, PATCH, DELETE, etc.) from your frontend (React) or backend (Node.js) to interact with a server or an API — in a more powerful and cleaner way than the native fetch().
+
+1. When you need cleaner, shorter syntax
+// With fetch
+fetch("/api/data")
+  .then(res => res.json())
+  .then(data => console.log(data));
+
+// With axios
+axios.get("/api/data").then(res => console.log(res.data));
+
+____________________________________________________
+
+useauth()
+
+const { user, login, logout } = useAuth();
+Now you can:
+
+user → Get the current logged-in user's data (like name/email)
+login(token, user) → Save token + user info to context and localStorage
+logout() → Clear everything (token + user) from context/localStorage
+
+____________________________________________________
+
+🔐 AuthContext.jsx — What It Does:
+This file creates a global authentication system using React Context.
+It helps the whole app know:
+
+Who is logged in
+What their token is
+How to log in / log out
+
+🔧 Core Functions Inside:
+login(token, user): saves user + token to state and localStorage
+logout(): clears user and token from state and storage
+useAuth(): lets any component easily access auth data
+

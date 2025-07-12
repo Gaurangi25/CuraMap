@@ -6,7 +6,7 @@ import Hospital from "../models/Hospital.js";
 
 const router = express.Router();
 
-// GET all hospitals
+// =================== GET all hospitals ===================
 router.get("/", async (req, res) => {
   //   console.log("GET /api/hospitals is working");
   //   res.send("Hospital GET route is working");
@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// POST a new hospital
+// =================== POST a new hospital ===================
 router.post("/", async (req, res) => {
   //   console.log("POST /api/hospitals");
   //   console.log(req.body);
@@ -31,6 +31,26 @@ router.post("/", async (req, res) => {
     res.status(201).json(saved);
   } catch (err) {
     res.status(400).json({ error: "Invalid data" });
+  }
+});
+
+// =================== PATCH report a hospital ===================
+router.patch("/:id/report", async (req, res) => {
+  try {
+    const hospital = await Hospital.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { reportCount: 1 } },
+      { new: true }
+    );
+
+    if (!hospital) {
+      return res.status(404).json({ error: "Hospital not found" });
+    }
+
+    res.json(hospital);
+  } catch (err) {
+    console.log("Error in PATCH /:id/report", err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 

@@ -1,0 +1,208 @@
+.hospital-wrapper {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: var(--form-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Title */
+.hospital-title {
+  font-family: var(--font-style-2);
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: var(--primary-color);
+}
+
+/* Filters section */
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.filters select,
+.filters input[type="checkbox"] {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-family: var(--font-style-poppins);
+  font-size: 1rem;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Filter hover/focus */
+.filters select:hover,
+.filters input[type="checkbox"]:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(21, 101, 192, 0.2);
+}
+
+.filters select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+/* Open now checkbox label */
+.open-now-label {
+  font-family: var(--font-style-poppins);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+/* Hospital List Layout */
+.hospital-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+/* Each card block */
+.hospital-card {
+  background: linear-gradient(135deg, #ffffff, #f1f8ff);
+  padding: 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* Card animation */
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hospital-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+/* Hospital header */
+.hospital-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hospital-header h3 {
+  margin: 0;
+  font-family: var(--font-style-roboto);
+  font-size: 1.4rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* govt or private badges */
+.badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.badge.govt {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.badge.private {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+/* Address Block */
+.address {
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+  color: var(--text-color);
+  font-family: var(--font-style-poppins);
+  line-height: 1.4;
+}
+
+/* Status text style */
+.status-open {
+  color: green;
+  font-weight: bold;
+}
+
+.status-closed {
+  color: red;
+  font-weight: bold;
+}
+
+/* Report Button */
+.report-btn {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  background-color: var(--error-color);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.6rem;
+}
+
+.report-btn:hover {
+  background-color: #c62828;
+}
+
+/* After reporting */
+.report-btn.reported {
+  background-color: #9ccc65; /* green */
+  cursor: not-allowed;
+  color: #000;
+  font-weight: bold;
+}
+
+.report-btn:disabled {
+  opacity: 0.7;
+}
+
+/* Report Count */
+.report-count {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  color: var(--text-color);
+}
+
+/* When no hospital matches filter */
+.no-results {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--error-color);
+  font-family: var(--font-style-poppins);
+  margin-top: 2rem;
+}
+
+/* Responsive Breakpoints */
+@media (min-width: 768px) {
+  .hospital-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hospital-list {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}

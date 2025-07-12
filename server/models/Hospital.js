@@ -9,6 +9,8 @@ const hospitalSchema = new mongoose.Schema({
   longitude: Number,
   type: { type: String },
   verified: { type: Boolean, default: false },
+  openNow: { type: Boolean, default: false },
+  reportCount: { type: Number, default: 0 },
 });
 
 const Hospital = mongoose.model("Hospital", hospitalSchema);
