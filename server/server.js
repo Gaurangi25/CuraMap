@@ -19,6 +19,9 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// to get nearby hospitals 
+app.use("/api/hospitals", hospitalRoutes);
+
 app.get("/", (req, res) => {
   res.send("CuraMap is running");
 });

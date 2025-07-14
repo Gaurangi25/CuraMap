@@ -28,6 +28,22 @@ const defaultCenter = {
 // Add "marker" library to be future ready (as its deprecated currently)
 const libraries = ["marker"];
 
+/*Haversine formula -> 
+The standard way to compute the great‑circle distance between two latitude/longitude points on Earth.
+*/
+const distanceKm = (lat1, lon1, lat2, lon2) => {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  return (2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))).toFixed(1);
+};
+
 function HospitalMap() {
   const [hospitals, setHospitals] = useState([]);
 
@@ -36,6 +52,11 @@ function HospitalMap() {
 
   // To store the user's current location (latitude & longitude)
   const [userLocation, setUserLocation] = useState(null);
+
+  // Radius in metres
+  const [radius, setRadius] = useState(5000);
+
+  const [loading, setLoading] = useState(false);
 
   //load Google Maps API
   const { isLoaded } = useJsApiLoader({
@@ -46,20 +67,29 @@ function HospitalMap() {
 
   //Fetch hospital data from backend API
   useEffect(() => {
+    if (!userLocation) return; // wait for coords
+    setLoading(true);
+    console.log("Making API request to nearby with:", userLocation, radius);
+
     axios
-      .get("http://localhost:5000/api/hospitals")
+      .get(
+        `/api/hospitals/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&r=${radius}`
+      )
       .then((res) => {
+        console.log("Nearby hospitals from API:", res.data);
         setHospitals(res.data);
         //console.log("Fetched Hospital ->", res.data);
       })
-      .catch((err) => console.error("Failed to fetch hospitals", err));
-  }, []);
+      .catch((err) => console.error("Failed to fetch hospitals", err))
+      .finally(() => setLoading(false));
+  }, [userLocation, radius]);
 
   // get user's current location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          console.log("Geolocation successful:", position);
           setUserLocation({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
@@ -100,52 +130,82 @@ function HospitalMap() {
     ));
 
   return (
-    <GoogleMap
-      //mapContainerStyle → tells it how big to draw
-      mapContainerStyle={mapSize}
-      //center → where the map starts
-      center={userLocation || defaultCenter}
-      //zoom={12} → how zoomed in (1=world, 20=building)
-      zoom={userLocation ? 13 : 12}
-    >
-      {/* Hospital markers with clustering */}
-      <MarkerClusterer>
-        {(clusterer) => renderMarkers(clusterer)}
-      </MarkerClusterer>
-
-      {/* (Blue Marker) User Location Marker */}
-      {userLocation && (
-        <Marker
-          position={userLocation}
-          title="You are here"
-          icon={{
-            url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-            scaledSize: new window.google.maps.Size(40, 40),
-          }}
-        />
-      )}
-
-      {/*<Marker /> → puts a pin on the map 
-      <Marker position={defaultCenter} /> */}
-      {selectedHospital && (
-        <InfoWindow
-          position={{
-            lat: selectedHospital.latitude,
-            lng: selectedHospital.longitude,
-          }}
-          /* It removes the current selectedId Which means → no marker is active now.So the InfoWindow disappears from the map */
-
-          onCloseClick={() => setSelectedId(null)}
+    <>
+      {/* Radius Selector */}
+      <div style={{ marginBottom: "10px" }}>
+        Radius:
+        <select
+          value={radius}
+          onChange={(e) => setRadius(Number(e.target.value))}
+          style={{ marginLeft: "10px" }}
         >
-          <div>
-            <h4 style={{ margin: 0 }}>{selectedHospital.name}</h4>
-            <p style={{ margin: 0, fontSize: "0.85rem" }}>
-              {selectedHospital.address}
-            </p>
-          </div>
-        </InfoWindow>
+          <option value={2000}>2 km</option>
+          <option value={5000}>5 km</option>
+          <option value={10000}>10 km</option>
+        </select>
+      </div>
+
+      {loading && (
+        <p style={{ textAlign: "center" }}>Loading nearby hospitals...</p>
       )}
-    </GoogleMap>
+
+      <GoogleMap
+        //mapContainerStyle → tells it how big to draw
+        mapContainerStyle={mapSize}
+        //center → where the map starts
+        center={userLocation || defaultCenter}
+        //zoom={12} → how zoomed in (1=world, 20=building)
+        zoom={userLocation ? 13 : 12}
+      >
+        {/* Hospital markers with clustering */}
+        <MarkerClusterer>
+          {(clusterer) => renderMarkers(clusterer)}
+        </MarkerClusterer>
+
+        {/* (Blue Marker) User Location Marker */}
+        {userLocation && (
+          <Marker
+            position={userLocation}
+            title="You are here"
+            icon={{
+              url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+              scaledSize: new window.google.maps.Size(40, 40),
+            }}
+          />
+        )}
+
+        {/*<Marker /> → puts a pin on the map 
+        <Marker position={defaultCenter} /> */}
+        {selectedHospital && (
+          <InfoWindow
+            position={{
+              lat: selectedHospital.latitude,
+              lng: selectedHospital.longitude,
+            }}
+            /* It removes the current selectedId Which means → no marker is active now.So the InfoWindow disappears from the map */
+            onCloseClick={() => setSelectedId(null)}
+          >
+            <div>
+              <h4 style={{ margin: 0 }}>{selectedHospital.name}</h4>
+              <p style={{ margin: 0, fontSize: "0.85rem" }}>
+                {selectedHospital.address}
+              </p>
+              {userLocation && (
+                <p style={{ margin: 0, fontSize: "0.75rem", color: "gray" }}>
+                  {distanceKm(
+                    userLocation.lat,
+                    userLocation.lng,
+                    selectedHospital.latitude,
+                    selectedHospital.longitude
+                  )}{" "}
+                  km away
+                </p>
+              )}
+            </div>
+          </InfoWindow>
+        )}
+      </GoogleMap>
+    </>
   );
 }
 

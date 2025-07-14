@@ -189,3 +189,23 @@ useAuth() is a shortcut that gives you access to login info, user data, and auth
 ____________________________________________________
 
 The Google Maps JS API supports: geolocation centering, custom markers, InfoWindows, marker clustering, directions/routing, and so on.
+
+____________________________________________________
+
+controllers
+
+In a clean Express project, controllers are used to separate logic from the route declarations.
+
+Think of it this way:
+
+File	Purpose
+routes/hospitalRoutes.js	Defines what the route is (/nearby, /add, /report)
+controllers/hospitalController.js	Defines what happens when that route is hit
+
+This separation:
+
+Keeps route files clean
+
+Makes your code modular and readable
+
+Makes it easier to test and maintain

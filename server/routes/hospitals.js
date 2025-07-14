@@ -1,10 +1,14 @@
 import express from "express";
 import mongoose from "mongoose";
 import Hospital from "../models/Hospital.js";
+import { nearbyHospitals } from "../controllers/hospitalController.js";
 
 // a mini app just for hospitals
 
 const router = express.Router();
+
+// =================== GET nearby hospitals ===================
+router.get("/nearby", nearbyHospitals);
 
 // =================== GET all hospitals ===================
 router.get("/", async (req, res) => {

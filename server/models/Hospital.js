@@ -11,7 +11,30 @@ const hospitalSchema = new mongoose.Schema({
   verified: { type: Boolean, default: false },
   openNow: { type: Boolean, default: false },
   reportCount: { type: Number, default: 0 },
+
+  location:{
+    type:{
+      type:String,
+      enum:["Point"],
+      required:true,
+      default:"Point"
+    },
+
+    coordinates:{
+      type:[Number],  //[lng,lat]
+      required:true,
+      validate:{
+        validator:function (val){
+          return val.length === 2;
+        },
+        message: "Coordinates must be [longitude, latitude]"
+      }
+    }
+  }
 });
+
+// 🌐 Add geospatial index for MongoDB
+hospitalSchema.index({ location: "2dsphere" });
 
 const Hospital = mongoose.model("Hospital", hospitalSchema);
 
