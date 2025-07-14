@@ -18,14 +18,23 @@ export function AuthProvider({ children }) {
     const savedToken = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
 
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
+    if (savedToken) setToken(savedToken);
+
+    if (savedUser && savedToken) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch {
+        // wipe that data->undefined
+        localStorage.removeItem("user");
+      }
     }
   }, []);
 
   // Save login info
   function login(newToken, newUser) {
+    console.log("Saving token to context/localStorage:", newToken);
+    console.log("Saving user to context/localStorage:", newUser);
+
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem("token", newToken);

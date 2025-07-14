@@ -20,6 +20,7 @@ function HospitalDetails() {
   const [hospitals, setHospitals] = useState([]);
   const [filterType, setFilterType] = useState(""); // for govt or public filters
   const [openNow, setOpenNow] = useState(false); //to show if hospital is available right now or not
+  const [search, setSearch] = useState("");
 
   // to fetch data from the backend
   useEffect(() => {
@@ -31,12 +32,17 @@ function HospitalDetails() {
       });
   }, []);
 
+  // Apply filters: type, openNow, and search
   const filteredHospitals = hospitals.filter((hospital) => {
-    const matchesFilter = filterType ? hospital.type === filterType : true;
+    const matchesType = filterType ? hospital.type === filterType : true;
 
     const matchesOpen = openNow ? hospital.openNow === true : true;
 
-    return matchesFilter && matchesOpen;
+    const matchesSearch =
+      hospital.name.toLowerCase().includes(search.toLowerCase()) ||
+      hospital.address.toLowerCase().includes(search.toLowerCase());
+
+    return matchesType && matchesOpen && matchesSearch;
   });
 
   function handleChange(event) {
@@ -77,6 +83,15 @@ function HospitalDetails() {
           <input type="checkbox" checked={openNow} onChange={handleShowOpen} />
           Open Now
         </label>
+
+        {/* 🔍 Search bar */}
+        <input
+          type="text"
+          placeholder="Search hospital..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="search-input"
+        />
       </div>
 
       {/* Title */}

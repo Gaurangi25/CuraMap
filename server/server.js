@@ -2,10 +2,16 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+
+import session from "express-session";
+import passport from "./config/passport.js";
+
 import hospitalRoutes from "./routes/hospitals.js";
-import authroutes from "./routes/auth.js";
+import authRoutes from "./routes/auth.js";
 
 dotenv.config();
+
+//console.log("JWT SECRET : ",process.env.JWT_SECRET);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -17,8 +23,19 @@ app.get("/", (req, res) => {
   res.send("CuraMap is running");
 });
 
+/* google oauth connection using passport.js */
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "sessionsecret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 app.use("/api/hospitals", hospitalRoutes); //Using hospital routes
-app.use("/api/auth", authroutes); //Using auth routes
+app.use("/api/auth", authRoutes); //Using auth routes
 
 /* MongoDB Connection */
 mongoose

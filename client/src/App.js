@@ -9,6 +9,8 @@ import "./index.css";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Dashboard from "./components/Dashboard";
+import PrivateRoute from "./components/PrivateRoute";
+import OAuthHandler from "./components/OAuthHandler";
 
 import "./index.css";
 
@@ -49,6 +51,7 @@ function App() {
       </div>
 
       {/* Routes */}
+
       <Routes>
         <Route
           path="/"
@@ -60,9 +63,25 @@ function App() {
             </>
           }
         />
+
+        {/* LOGIN PAGE ROUTE */}
         <Route path="/login" element={<Login />} />
+
+        {/* SIGNUP PAGE ROUTE */}
         <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+
+        {/* OAUTH ROUTE */}
+        <Route path="/oauth" element={<OAuthHandler />} />
+
+        {/* DASHBOARD ROUTE */}
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </div>
   );

@@ -21,10 +21,13 @@ function Login() {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/api/auth/login`,
+        {
+          email,
+          password,
+        }
+      );
 
       const { token, user } = res.data;
 
@@ -75,6 +78,17 @@ function Login() {
           Login
         </button>
       </form>
+
+      {/* Google OAuth login */}
+      <div className="oauth-section">
+        <a
+          href={`${process.env.REACT_APP_API_BASE_URL}/api/auth/google`}
+          className="google-btn"
+        >
+          <img src="/google.png" alt="Google" className="google-icon" />
+          <span className="google-text">Login with Google</span>
+        </a>
+      </div>
 
       <p className="auth-footer">
         Don't have an account? <a href="/signup">Sign up</a>

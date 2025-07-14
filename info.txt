@@ -173,3 +173,19 @@ login(token, user): saves user + token to state and localStorage
 logout(): clears user and token from state and storage
 useAuth(): lets any component easily access auth data
 
+____________________________________________________
+
+PrivateRoute.jsx
+
+till AuthContext.jsx -> anyone can access mhy dashboard even if they are not logged in using localhost:3000/dashboard
+
+so PrivateRoute.jsx acts as a security guard which until JWT token is not given wont let u enter 
+____________________________________________________
+
+useAuth()
+
+useAuth() is a shortcut that gives you access to login info, user data, and auth functions (like login() and logout()) anywhere in your app.
+
+____________________________________________________
+
+The Google Maps JS API supports: geolocation centering, custom markers, InfoWindows, marker clustering, directions/routing, and so on.

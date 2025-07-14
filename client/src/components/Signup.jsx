@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate} from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./Auth.css";
 
 function Signup() {
@@ -9,9 +11,12 @@ function Signup() {
     password: "",
   });
 
-  // To show error or success message
+  // To show error message
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   function handleChange(event) {
     setForm({
@@ -20,18 +25,29 @@ function Signup() {
     });
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     setError("");
-    setSuccess("");
+    setLoading(true);
 
-    axios
-      .post("http://localhost:5000/api/auth/signup", form)
-      .then(() => {
-        setSuccess("Signup successful. Please log in.");
-        setForm({ name: "", email: "", password: "" }); // reset form
-      })
-      .catch((err) => setError(err.response?.data?.error || "Signup failed"));
+    try {
+      const result = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/api/auth/signup`,
+        form
+      );
+
+      //If signup is successful, log them in right away
+      const { token, user } = result.data;
+
+      //saves to AuthContext + localstorage
+      login(token, user);
+
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.error || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -60,6 +76,7 @@ function Signup() {
             value={form.email}
             required
             className="auth-input"
+            type="email"
           />
         </label>
 
@@ -78,12 +95,21 @@ function Signup() {
 
         {/* Show any error or success message */}
         {error && <p className="auth-error">❌ {error}</p>}
-        {success && <p className="auth-success">✅ {success}</p>}
 
-        <button type="submit" className="auth-button">
-          Sign Up
+        <button type="submit" className="auth-button" disabled={loading}>
+          {loading ? "Signing up..." : "Sign Up"}
         </button>
       </form>
+
+      <div className="oauth-section">
+        <a
+          href={`${process.env.REACT_APP_API_BASE_URL}/api/auth/google`}
+          className="google-btn"
+        >
+          <img src="/google.png" alt="Google" className="google-icon" />
+          <span className="google-text">SignUp with Google</span>
+        </a>
+      </div>
 
       <p className="auth-footer">
         Already have an account? <a href="/login">Log in</a>
