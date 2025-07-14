@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./HospitalDetails.css";
 
 /*
@@ -13,6 +14,7 @@ Tech you'll use:
 useState() → to store hospital data
 useEffect() → to fetch data when component loads
 fetch() or axios → to call the API
+useNavigate() → to redirect to /hospital/:id on card click
 
 */
 
@@ -21,6 +23,8 @@ function HospitalDetails() {
   const [filterType, setFilterType] = useState(""); // for govt or public filters
   const [openNow, setOpenNow] = useState(false); //to show if hospital is available right now or not
   const [search, setSearch] = useState("");
+
+  const navigate = useNavigate();
 
   // to fetch data from the backend
   useEffect(() => {
@@ -75,8 +79,9 @@ function HospitalDetails() {
       <div className="filters">
         <select onChange={handleChange} value={filterType}>
           <option value="">All Types</option>
-          <option value="govt">Government</option>
-          <option value="private">Private</option>
+          <option value="general">General</option>
+          <option value="specialized">Specialized</option>
+          <option value="clinic">Clinic</option>
         </select>
 
         <label className="open-now-label">
@@ -97,27 +102,31 @@ function HospitalDetails() {
       {/* Title */}
       <h2 className="hospital-title">🏥 Nearby Hospitals</h2>
 
-      {/* Hospital List */}
+      {/* 🧾 Hospital List */}
       <div className="hospital-list">
         {filteredHospitals.map((hospital) => (
-          <div className="hospital-card" key={hospital._id}>
+          <div
+            className="hospital-card"
+            key={hospital._id}
+            onClick={() => navigate(`/hospital/${hospital._id}`)} // 👈 redirects to hospital profile
+            style={{ cursor: "pointer" }} // ✨ UX: indicates it's clickable
+          >
             <div className="hospital-header">
               <h3>{hospital.name}</h3>
               <span className={`badge ${hospital.type}`}>{hospital.type}</span>
             </div>
 
-            {/*Address Block*/}
             <p className="address">{hospital.address}</p>
-
-            {/* Check Open Now or not */}
             <p>status : {hospital.openNow ? "🟢 Open Now" : "🔴 Closed"}</p>
 
-            {/* Button */}
             <button
               className={`report-btn ${
                 hospital.reportCount > 0 ? "reported" : ""
               }`}
-              onClick={() => handleReport(hospital._id)}
+              onClick={(e) => {
+                e.stopPropagation(); // 🚫 Prevent click bubbling to card
+                handleReport(hospital._id);
+              }}
               disabled={hospital.reportCount > 0}
             >
               {hospital.reportCount > 0 ? "✅ Reported" : "⚠️ Report Issue"}

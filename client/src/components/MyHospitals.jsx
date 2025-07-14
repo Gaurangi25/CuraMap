@@ -8,8 +8,6 @@ function MyHospitals() {
   const { token } = useAuth();
   const navigate = useNavigate();
 
-  const [hospitals, setHospitals] = useState([]); 
-
   useEffect(() => {
     async function fetchHospitals() {
       try {

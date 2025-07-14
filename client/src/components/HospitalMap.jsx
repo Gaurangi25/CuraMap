@@ -201,6 +201,12 @@ function HospitalMap() {
                   km away
                 </p>
               )}
+
+              {/* Availability Info */}
+              <p>Beds : {selectedHospital.availableBeds}</p>
+              <p>Oxygen Units : {selectedHospital.availableOxygen}</p>
+              <p>Ambulances : {selectedHospital.ambulancesAvailable}</p>
+              <p>Last Updated : {selectedHospital.lastUpdated}</p>
             </div>
           </InfoWindow>
         )}

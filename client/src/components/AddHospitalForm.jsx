@@ -11,6 +11,11 @@ function AddHospitalForm() {
     longitude: "",
     type: "",
     verified: false,
+
+    // Available details
+    availableBeds: "",
+    availableOxygen: "",
+    ambulancesAvailable: "",
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -52,9 +57,36 @@ function AddHospitalForm() {
             type: "general"
             [[Prototype]]: Object
     */
+    // Calculate location for mongoDB
+    const location = {
+      type: "Point",
+      coordinates: [
+        parseFloat(formData.latitude),
+        parseFloat(formData.longitude),
+      ],
+    };
+
+    // Final hospitalData
+    const hospitalData = {
+      ...formData,
+      latitude: parseFloat(formData.latitude),
+      longitude: parseFloat(formData.longitude),
+      availableBeds: parseInt(formData.availableBeds) || 0,
+      availableOxygen: parseInt(formData.availableOxygen) || 0,
+      ambulancesAvailable: parseInt(formData.ambulancesAvailable) || 0,
+      location: {
+        type: "Point",
+        coordinates: [
+          parseFloat(formData.longitude),
+          parseFloat(formData.latitude),
+        ],
+      },
+    };
+
+    console.log(hospitalData);
 
     axios
-      .post("http://localhost:5000/api/hospitals", formData)
+      .post("http://localhost:5000/api/hospitals", hospitalData)
       .then((res) => {
         console.log("Data sent to backend", res.data);
         setSubmitted(true);
@@ -72,6 +104,9 @@ function AddHospitalForm() {
           longitude: "",
           type: "",
           verified: false,
+          availableBeds: "",
+          availableOxygen: "",
+          ambulancesAvailable: "",
         });
       })
       .catch((err) => {
@@ -100,7 +135,7 @@ function AddHospitalForm() {
         <input
           className="form-input"
           type="text"
-          placeholder="address"
+          placeholder="Address"
           name="address"
           value={formData.address}
           onChange={handleChange}
@@ -109,7 +144,7 @@ function AddHospitalForm() {
 
         <input
           className="form-input"
-          type="text"
+          type="tel"
           placeholder="Phone Number"
           name="phone"
           value={formData.phone}
@@ -123,6 +158,7 @@ function AddHospitalForm() {
           name="latitude"
           value={formData.latitude}
           onChange={handleChange}
+          required
         />
 
         <input
@@ -132,7 +168,50 @@ function AddHospitalForm() {
           name="longitude"
           value={formData.longitude}
           onChange={handleChange}
+          required
         />
+
+        {/* Availability Inputs */}
+        <input
+          className="form-input"
+          type="number"
+          placeholder="Available Beds"
+          name="availableBeds"
+          value={formData.availableBeds}
+          onChange={handleChange}
+          min="0"
+        />
+
+        <input
+          className="form-input"
+          type="number"
+          placeholder="Available Oxygen Units"
+          name="availableOxygen"
+          value={formData.availableOxygen}
+          onChange={handleChange}
+          min="0"
+        />
+
+        <input
+          className="form-input"
+          type="number"
+          placeholder="Ambulances Available"
+          name="ambulancesAvailable"
+          value={formData.ambulancesAvailable}
+          onChange={handleChange}
+          min="0"
+        />
+
+        {/* checkbox to select type */}
+        <label className="form-checkbox">
+          <input
+            type="checkbox"
+            name="verified"
+            checked={formData.verified}
+            onChange={handleChange}
+          />
+          Open Now
+        </label>
 
         {/* select options */}
         <select
@@ -147,17 +226,6 @@ function AddHospitalForm() {
           <option value="specialized">Specialized</option>
           <option value="clinic">Clinic</option>
         </select>
-
-        {/* checkbox to select type */}
-        <label className="form-checkbox">
-          <input
-            type="checkbox"
-            name="verified"
-            checked={formData.verified}
-            onChange={handleChange}
-          />
-          Verified
-        </label>
 
         <button type="submit" disabled={loading} className="form-submit-btn">
           {loading ? "Submitting..." : "Submit"}

@@ -5,6 +5,9 @@ import AddHospitalForm from "./components/AddHospitalForm";
 import HospitalDetails from "./components/HospitalDetails";
 import HospitalMap from "./components/HospitalMap";
 import "./index.css";
+import HospitalProfile from "./components/HospitalProfile";
+import LandingPage from "./components/LandingPage";
+import MyHospitals from "./components/MyHospitals";
 
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -53,16 +56,44 @@ function App() {
       {/* Routes */}
 
       <Routes>
+        {/* LANDING PAGE INFO */}
+        <Route path="/" element={<LandingPage />} />
+
+        {/* HOSPITAL ADMIN ENTRY */}
         <Route
-          path="/"
+          path="/admin"
           element={
-            <>
-              <HospitalMap />
-              <HospitalDetails />
+            <PrivateRoute>
               <AddHospitalForm />
-            </>
+            </PrivateRoute>
           }
         />
+
+        {/* SHOW HOSPITALS FROM AN ADMIN*/}
+        <Route
+          path="/my-hospitals"
+          element={
+            <PrivateRoute>
+              <MyHospitals />
+            </PrivateRoute>
+          }
+        />
+
+        {/* USER ENTRY - Map + Hospital List */}
+        <Route
+          path="/user"
+          element={
+            <PrivateRoute>
+              <>
+                <HospitalMap />
+                <HospitalDetails />
+              </>
+            </PrivateRoute>
+          }
+        />
+
+        {/* HOSPITAL DEATILS PAGE */}
+        <Route path="/hospital/:id" element={<HospitalProfile />} />
 
         {/* LOGIN PAGE ROUTE */}
         <Route path="/login" element={<Login />} />
