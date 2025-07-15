@@ -8,6 +8,7 @@ import "./index.css";
 import HospitalProfile from "./components/HospitalProfile";
 import LandingPage from "./components/LandingPage";
 import MyHospitals from "./components/MyHospitals";
+import EditHospital from "./components/EditHospital";
 
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -88,6 +89,16 @@ function App() {
                 <HospitalMap />
                 <HospitalDetails />
               </>
+            </PrivateRoute>
+          }
+        />
+
+        {/* EDIT AN HOSPITAL DETAILS*/}
+        <Route
+          path="/edit-hospital/:id"
+          element={
+            <PrivateRoute>
+              <EditHospital />
             </PrivateRoute>
           }
         />

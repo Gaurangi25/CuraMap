@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./AddHospitalForm.css";
 
 function AddHospitalForm() {
@@ -22,6 +24,12 @@ function AddHospitalForm() {
 
   //To prevent multiple submissions while waiting for the backend response
   const [loading, setLoading] = useState(false);
+
+  //To get token from context
+  const { token } = useAuth();
+
+  //For redirection
+  const navigate = useNavigate();
 
   /* ----------------- handlers ----------------- */
   //Handling change for changes in any input type
@@ -57,14 +65,6 @@ function AddHospitalForm() {
             type: "general"
             [[Prototype]]: Object
     */
-    // Calculate location for mongoDB
-    const location = {
-      type: "Point",
-      coordinates: [
-        parseFloat(formData.latitude),
-        parseFloat(formData.longitude),
-      ],
-    };
 
     // Final hospitalData
     const hospitalData = {
@@ -83,10 +83,19 @@ function AddHospitalForm() {
       },
     };
 
-    console.log(hospitalData);
+    // console.log(hospitalData);
+    // console.log("Current token:", token);
 
     axios
-      .post("http://localhost:5000/api/hospitals", hospitalData)
+      .post(
+        `${process.env.REACT_APP_API_BASE_URL}/api/hospitals`,
+        hospitalData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then((res) => {
         console.log("Data sent to backend", res.data);
         setSubmitted(true);
@@ -104,13 +113,16 @@ function AddHospitalForm() {
           longitude: "",
           type: "",
           verified: false,
-          availableBeds: "",
-          availableOxygen: "",
-          ambulancesAvailable: "",
+          availableBeds: 0,
+          availableOxygen: 0,
+          ambulancesAvailable: 0,
         });
+
+        navigate("/my-hospitals");
       })
       .catch((err) => {
         console.log("Error sending data: ", err);
+        alert("Submission failed. Please check console for details.");
         setLoading(false);
       });
   }
@@ -233,8 +245,17 @@ function AddHospitalForm() {
       </form>
 
       {submitted && (
-        <p className="form-success-msg">✅ Form submitted successfully!</p>
+        <p className="form-success-msg">Form submitted successfully!</p>
       )}
+
+      <div className="form-navigation">
+        <button
+          className="form-view-button"
+          onClick={() => navigate("/my-hospitals")}
+        >
+          📄 View My Hospitals
+        </button>
+      </div>
     </div>
   );
 }

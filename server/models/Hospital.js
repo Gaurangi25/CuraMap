@@ -9,7 +9,12 @@ const hospitalSchema = new mongoose.Schema({
   longitude: Number,
 
   // Params added later - 1
-  type: { type: String },
+  type: {
+    type: String,
+    enum: ["general", "specialized", "clinic"],
+    required: true,
+  },
+
   verified: { type: Boolean, default: false },
   openNow: { type: Boolean, default: false },
   reportCount: { type: Number, default: 0 },

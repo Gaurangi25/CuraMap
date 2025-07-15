@@ -10,6 +10,17 @@ const router = express.Router();
 // =================== GET nearby hospitals ===================
 router.get("/nearby", nearbyHospitals);
 
+// =================== GET my hospitals (auth only) ===================
+router.get("/mine", authMiddleware, async (req, res) => {
+  try {
+    const hospitals = await Hospital.find({ owner: req.user.id });
+    res.json(hospitals);
+  } catch (err) {
+    console.error("GET /api/hospitals/mine error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // =================== GET all hospitals ======================
 router.get("/", async (req, res) => {
   //   console.log("GET /api/hospitals is working");
@@ -34,17 +45,6 @@ router.get("/:id", async (req, res) => {
     res.json(hospital);
   } catch (err) {
     console.log("Error in GET /:id", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// =================== GET my hospitals (auth only) ===================
-router.get("/mine", authMiddleware, async (req, res) => {
-  try {
-    const hospitals = await Hospital.find({ owner: req.user.id });
-    res.json(hospitals);
-  } catch (err) {
-    console.error("GET /api/hospitals/mine error:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -189,6 +189,46 @@ router.patch("/:id", authMiddleware, async (req, res) => {
     res.json(updated);
   } catch (err) {
     console.error("PATCH /api/hospitals/:id error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// =================== PUT update hospital by ID ===================
+router.put("/:id", authMiddleware, async (req, res) => {
+  try {
+    const hospital = await Hospital.findById(req.params.id);
+
+    if (!hospital) {
+      return res.status(404).json({ error: "Hospital not found" });
+    }
+
+    if (hospital.owner.toString() !== req.user.id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    const allowedFields = [
+      "name",
+      "address",
+      "phone",
+      "latitude",
+      "longitude",
+      "type",
+      "verified",
+      "availableBeds",
+      "availableOxygen",
+      "ambulancesAvailable",
+    ];
+
+    allowedFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        hospital[field] = req.body[field];
+      }
+    });
+
+    const updated = await hospital.save();
+    res.json(updated);
+  } catch (err) {
+    console.error("PUT /api/hospitals/:id error:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });

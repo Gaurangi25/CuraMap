@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
 // Create the context
 const AuthContext = createContext();
@@ -16,16 +17,24 @@ export function AuthProvider({ children }) {
   // Load saved login info from localStorage
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
-
-    if (savedToken) setToken(savedToken);
-
-    if (savedUser && savedToken) {
+    
+    if (savedToken) {
       try {
-        setUser(JSON.parse(savedUser));
-      } catch {
-        // wipe that data->undefined
-        localStorage.removeItem("user");
+        const decoded = jwtDecode(savedToken);
+
+        const userFromToken = {
+          _id: decoded.id,
+          email: decoded.email,
+          name: decoded.name,
+        };
+
+        setToken(savedToken);
+        setUser(userFromToken);
+
+        console.log("✅ Auth restored from token:", userFromToken);
+      } catch (err) {
+        console.warn("⚠️ Invalid token in localStorage. Clearing...");
+        localStorage.removeItem("token");
       }
     }
   }, []);
@@ -33,12 +42,11 @@ export function AuthProvider({ children }) {
   // Save login info
   function login(newToken, newUser) {
     console.log("Saving token to context/localStorage:", newToken);
-    console.log("Saving user to context/localStorage:", newUser);
+    console.log("Saving user to context", newUser);
 
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem("token", newToken);
-    localStorage.setItem("user", JSON.stringify(newUser));
   }
 
   // Logout function
@@ -46,7 +54,6 @@ export function AuthProvider({ children }) {
     setToken(null);
     setUser(null);
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
   }
 
   return (

@@ -37,7 +37,6 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use("/api/hospitals", hospitalRoutes); //Using hospital routes
 app.use("/api/auth", authRoutes); //Using auth routes
 
 /* MongoDB Connection */

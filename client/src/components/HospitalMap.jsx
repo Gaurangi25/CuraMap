@@ -58,6 +58,9 @@ function HospitalMap() {
 
   const [loading, setLoading] = useState(false);
 
+  // User input for city or hospital search
+  const [search, setSearch] = useState("");
+
   //load Google Maps API
   const { isLoaded } = useJsApiLoader({
     // secret API key from .env.local
@@ -102,9 +105,24 @@ function HospitalMap() {
     }
   }, []);
 
-  if (!isLoaded) {
-    return <p>Loading Map...</p>;
-  }
+  if (!isLoaded) return <p>Loading Map...</p>;
+
+  const handleSearch = () => {
+    if (!search.trim()) return;
+
+    //Trying to match hospital by name
+    const match = hospitals.find((hospital) =>
+      hospital.name.toLowerCase().includes(search.toLowerCase())
+    );
+
+    if (match) {
+      setUserLocation({ lat: match.latitude, lng: match.longitude });
+      setSelectedId(match._id);
+      return;
+    } else {
+      alert("No hospital found with that name");
+    }
+  };
 
   // To find the selected hospital to show InfoWindow
   const selectedHospital = hospitals.find(
@@ -131,6 +149,20 @@ function HospitalMap() {
 
   return (
     <>
+      {/* ✅ Search Input and Button */}
+      <div style={{ marginBottom: "10px" }}>
+        <input
+          type="text"
+          placeholder="Search hospital by name..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ padding: "5px", width: "250px" }}
+        />
+        <button onClick={handleSearch} style={{ marginLeft: "10px" }}>
+          🔍 Search
+        </button>
+      </div>
+
       {/* Radius Selector */}
       <div style={{ marginBottom: "10px" }}>
         Radius:
@@ -186,12 +218,12 @@ function HospitalMap() {
             onCloseClick={() => setSelectedId(null)}
           >
             <div>
-              <h4 style={{ margin: 0 }}>{selectedHospital.name}</h4>
-              <p style={{ margin: 0, fontSize: "0.85rem" }}>
+              <h4>{selectedHospital.name}</h4>
+              <p>
                 {selectedHospital.address}
               </p>
               {userLocation && (
-                <p style={{ margin: 0, fontSize: "0.75rem", color: "gray" }}>
+                <p>
                   {distanceKm(
                     userLocation.lat,
                     userLocation.lng,

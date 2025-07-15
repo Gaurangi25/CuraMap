@@ -20,6 +20,7 @@ function OAuthHandler() {
       try {
         const decoded = jwtDecode(token);
         console.log("Decoded token:", decoded);
+        //alert("Decoded name: " + decoded.name);
 
         const user = {
           _id: decoded.id,

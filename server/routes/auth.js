@@ -33,7 +33,11 @@ router.get(
   (req, res) => {
     // req.user comes from our verify callback
     const token = jwt.sign(
-      { id: req.user._id, email: req.user.email },
+      {
+        id: req.user._id,
+        email: req.user.email,
+        name: req.user.name,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -84,11 +88,22 @@ router.post("/signup", async (req, res) => {
 
     //Generate JWT Token
     const token = jwt.sign(
-      { id: newUser._id, email: newUser.email },
+      {
+        id: newUser._id,
+        email: newUser.email,
+        name: newUser.name,
+      },
 
-      process.env.JWT_SECRET || "defaultsecret",
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
+
+    console.log("Local signup success. JWT payload:");
+    console.log({
+      id: newUser._id,
+      email: newUser.email,
+      name: newUser.name,
+    });
 
     res.status(201).json({
       token,
@@ -119,7 +134,11 @@ router.post("/login", async (req, res) => {
 
     // JWT Token
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+      },
       process.env.JWT_SECRET || "defaultsecret",
       { expiresIn: "1h" }
     );
