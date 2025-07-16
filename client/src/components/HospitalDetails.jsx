@@ -15,7 +15,6 @@ useState() → to store hospital data
 useEffect() → to fetch data when component loads
 fetch() or axios → to call the API
 useNavigate() → to redirect to /hospital/:id on card click
-
 */
 
 function HospitalDetails() {
@@ -74,9 +73,9 @@ function HospitalDetails() {
   }
 
   return (
-    <div className="hospital-wrapper">
+    <div className="hos-details-wrapper">
       {/* Filters */}
-      <div className="filters">
+      <div className="hos-details-filters">
         <select onChange={handleChange} value={filterType}>
           <option value="">All Types</option>
           <option value="general">General</option>
@@ -84,7 +83,7 @@ function HospitalDetails() {
           <option value="clinic">Clinic</option>
         </select>
 
-        <label className="open-now-label">
+        <label className="hos-details-open-now-label">
           <input type="checkbox" checked={openNow} onChange={handleShowOpen} />
           Open Now
         </label>
@@ -95,32 +94,34 @@ function HospitalDetails() {
           placeholder="Search hospital..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="search-input"
+          className="hos-details-search-input"
         />
       </div>
 
       {/* Title */}
-      <h2 className="hospital-title">🏥 Nearby Hospitals</h2>
+      <h2 className="hos-details-title">🏥 Nearby Hospitals</h2>
 
       {/* 🧾 Hospital List */}
-      <div className="hospital-list">
+      <div className="hos-details-list">
         {filteredHospitals.map((hospital) => (
           <div
-            className="hospital-card"
+            className="hos-details-card"
             key={hospital._id}
             onClick={() => navigate(`/hospital/${hospital._id}`)} // 👈 redirects to hospital profile
             style={{ cursor: "pointer" }} // ✨ UX: indicates it's clickable
           >
-            <div className="hospital-header">
+            <div className="hos-details-header">
               <h3>{hospital.name}</h3>
-              <span className={`badge ${hospital.type}`}>{hospital.type}</span>
+              <span className={`hos-details-badge ${hospital.type}`}>{hospital.type}</span>
             </div>
 
-            <p className="address">{hospital.address}</p>
-            <p>status : {hospital.openNow ? "🟢 Open Now" : "🔴 Closed"}</p>
+            <p className="hos-details-address">{hospital.address}</p>
+            <p className="hos-details-status">
+              status : {hospital.openNow ? "🟢 Open Now" : "🔴 Closed"}
+            </p>
 
             <button
-              className={`report-btn ${
+              className={`hos-details-report-btn ${
                 hospital.reportCount > 0 ? "reported" : ""
               }`}
               onClick={(e) => {
@@ -132,7 +133,7 @@ function HospitalDetails() {
               {hospital.reportCount > 0 ? "✅ Reported" : "⚠️ Report Issue"}
             </button>
 
-            <p className="report-count">
+            <p className="hos-details-report-count">
               ⚠️ Reports: {hospital.reportCount || 0}
             </p>
           </div>

@@ -6,7 +6,7 @@ Fetches hospital using ID and shows complete details
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-//import "./HospitalProfile.css";
+import "./HospitalProfile.css";
 
 function HospitalProfile() {
   const { id } = useParams();
@@ -27,45 +27,49 @@ function HospitalProfile() {
         ← Back to Hospitals
       </Link>
 
-      <h2>{hospital.name}</h2>
-      <p>
-        <strong>Address:</strong> {hospital.address}
-      </p>
-      <p>
-        <strong>Phone:</strong> {hospital.phone || "N/A"}
-      </p>
-      <p>
-        <strong>Type:</strong> {hospital.type}
-      </p>
-      <p>
-        <strong>Status:</strong>{" "}
-        {hospital.openNow ? "🟢 Open Now" : "🔴 Closed"}
-      </p>
-      <p>
-        <strong>Verified:</strong> {hospital.verified ? "✅ Yes" : "❌ No"}
-      </p>
-      <p>
-        <strong>Available Beds:</strong> {hospital.availableBeds}
-      </p>
-      <p>
-        <strong>Oxygen Units:</strong> {hospital.availableOxygen}
-      </p>
-      <p>
-        <strong>Ambulances:</strong> {hospital.ambulancesAvailable}
-      </p>
-      <p>
-        <strong>Latitude:</strong> {hospital.latitude}
-      </p>
-      <p>
-        <strong>Longitude:</strong> {hospital.longitude}
-      </p>
-      <p>
-        <strong>Reports:</strong> ⚠️ {hospital.reportCount}
-      </p>
-      <p>
-        <strong>Last Updated:</strong>{" "}
-        {new Date(hospital.lastUpdated).toLocaleString()}
-      </p>
+      <div className="hospital-border">
+        <div className="hospital-container">
+          <h2>{hospital.name}</h2>
+          <p>
+            <strong>Address:</strong> {hospital.address}
+          </p>
+          <p>
+            <strong>Phone:</strong> {hospital.phone || "N/A"}
+          </p>
+          <p>
+            <strong>Type:</strong> {hospital.type}
+          </p>
+          <p>
+            <strong>Status:</strong>{" "}
+            {hospital.openNow ? "🟢 Open Now" : "🔴 Closed"}
+          </p>
+          <p>
+            <strong>Verified:</strong> {hospital.verified ? "✅ Yes" : "❌ No"}
+          </p>
+          <p>
+            <strong>Available Beds:</strong> {hospital.availableBeds}
+          </p>
+          <p>
+            <strong>Oxygen Units:</strong> {hospital.availableOxygen}
+          </p>
+          <p>
+            <strong>Ambulances:</strong> {hospital.ambulancesAvailable}
+          </p>
+          <p>
+            <strong>Latitude:</strong> {hospital.latitude}
+          </p>
+          <p>
+            <strong>Longitude:</strong> {hospital.longitude}
+          </p>
+          <p>
+            <strong>Reports:</strong> ⚠️ {hospital.reportCount}
+          </p>
+          <p>
+            <strong>Last Updated:</strong>{" "}
+            {new Date(hospital.lastUpdated).toLocaleString()}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,115 @@
+.map-container {
+  padding: 1.5rem;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  font-family: var(--font-style-1);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* 🔍 Search bar styles */
+.map-search-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.map-search-input {
+  flex: 1;
+  min-width: 220px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+}
+
+.map-search-button {
+  padding: 0.5rem 1.1rem;
+  background-color: var(--button-color);
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.map-search-button:hover {
+  background-color: var(--button-hover);
+}
+
+/* 📍 Radius dropdown */
+.map-radius-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.map-radius-selector select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+/* 🌀 Loading message */
+.map-loading-text {
+  font-style: italic;
+  color: var(--muted-text-color);
+  margin-bottom: 1rem;
+}
+
+/* 🗺️ InfoWindow styling */
+.gm-style .gm-style-iw-c {
+  padding: 0.8rem !important;
+  font-family: var(--font-style-1);
+  background-color: var(--card-bg);
+}
+
+.gm-style .gm-style-iw-c h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  color: var(--accent-color);
+}
+
+.gm-style .gm-style-iw-c p {
+  margin: 0.2rem 0;
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+/* 🌙 Dark Mode Overrides */
+body.dark .map-container {
+  background-color: var(--card-bg-dark);
+  color: var(--text-color-dark);
+}
+
+body.dark .map-search-input {
+  background-color: var(--input-bg-dark);
+  color: var(--text-color-dark);
+  border-color: var(--accent-color);
+}
+
+body.dark .map-radius-selector select {
+  background-color: var(--card-bg-dark);
+  color: var(--text-color-dark);
+}
+
+body.dark .gm-style .gm-style-iw-c {
+  background-color: var(--card-bg-dark);
+}
+
+body.dark .gm-style .gm-style-iw-c h4,
+body.dark .gm-style .gm-style-iw-c p {
+  color: var(--text-color-dark);
+}

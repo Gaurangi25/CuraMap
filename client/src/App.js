@@ -25,7 +25,6 @@ function App() {
       <Header />
 
       {/* Routes */}
-
       <Routes>
         {/* LANDING PAGE INFO */}
         <Route path="/" element={<LandingPage />} />
@@ -56,8 +55,8 @@ function App() {
           element={
             <PrivateRoute>
               <>
-                <HospitalMap />
                 <HospitalDetails />
+                <HospitalMap />
               </>
             </PrivateRoute>
           }

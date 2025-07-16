@@ -1,0 +1,97 @@
+/* EditHospitalForm.css */
+
+/* Container */
+.edit-hospital-container {
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #e0e0e0;
+  border-radius: 20px;
+  box-shadow: 10px 10px 20px #bebebe, -10px -10px 20px #ffffff;
+  transition: all 0.3s ease;
+}
+
+/* Heading */
+.edit-hospital-container h2 {
+  text-align: center;
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+/* Form */
+.edit-hospital-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* Labels */
+.edit-hospital-form label {
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 0.3rem;
+}
+
+/* Inputs and Selects */
+.edit-hospital-form input,
+.edit-hospital-form select {
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 12px;
+  background: #e0e0e0;
+  box-shadow: inset 6px 6px 12px #bebebe, inset -6px -6px 12px #ffffff;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.edit-hospital-form input:focus,
+.edit-hospital-form select:focus {
+  box-shadow: 0 0 10px #7ec8e3, 0 0 20px #7ec8e3;
+}
+
+/* Button Section */
+.edit-hospital-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Buttons */
+.edit-hospital-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: #e0e0e0;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 5px 5px 15px #bebebe, -5px -5px 15px #ffffff;
+  transition: 0.3s ease;
+}
+
+.edit-hospital-btn:hover {
+  box-shadow: 0 0 10px #9be2c4, 0 0 20px #9be2c4;
+}
+
+/* Cancel Button Variant */
+.edit-hospital-btn.cancel {
+  background-color: #ffdddd;
+  color: #a33;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .edit-hospital-container {
+    margin: 2rem 1rem;
+    padding: 1.5rem;
+  }
+
+  .edit-hospital-actions {
+    flex-direction: column;
+  }
+}

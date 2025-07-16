@@ -12,6 +12,8 @@ import axios from "axios";
 // When you have many markers (hospitals) on the map, instead of all showing at once and overlapping, it groups nearby markers into a cluster (with a number) and expands them when zoomed in.
 import { MarkerClusterer } from "@react-google-maps/api";
 
+import "./HospitalMap.css";
+
 // size of the map box
 const mapSize = {
   //inline styling
@@ -148,28 +150,28 @@ function HospitalMap() {
     ));
 
   return (
-    <>
+    <div className="map-container">
       {/* ✅ Search Input and Button */}
-      <div style={{ marginBottom: "10px" }}>
+      <div className="map-search-bar">
         <input
           type="text"
           placeholder="Search hospital by name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ padding: "5px", width: "250px" }}
+          className="map-search-input"
         />
-        <button onClick={handleSearch} style={{ marginLeft: "10px" }}>
+        <button onClick={handleSearch} className="map-search-button">
           🔍 Search
         </button>
       </div>
 
       {/* Radius Selector */}
-      <div style={{ marginBottom: "10px" }}>
-        Radius:
+      <div className="map-radius-selector">
+        <label htmlFor="radius">Radius:</label>
         <select
+          id="radius"
           value={radius}
           onChange={(e) => setRadius(Number(e.target.value))}
-          style={{ marginLeft: "10px" }}
         >
           <option value={2000}>2 km</option>
           <option value={5000}>5 km</option>
@@ -177,9 +179,7 @@ function HospitalMap() {
         </select>
       </div>
 
-      {loading && (
-        <p style={{ textAlign: "center" }}>Loading nearby hospitals...</p>
-      )}
+      {loading && <p className="map-loading-text">Loading nearby hospitals...</p>}
 
       <GoogleMap
         //mapContainerStyle → tells it how big to draw
@@ -190,9 +190,7 @@ function HospitalMap() {
         zoom={userLocation ? 13 : 12}
       >
         {/* Hospital markers with clustering */}
-        <MarkerClusterer>
-          {(clusterer) => renderMarkers(clusterer)}
-        </MarkerClusterer>
+        <MarkerClusterer>{(clusterer) => renderMarkers(clusterer)}</MarkerClusterer>
 
         {/* (Blue Marker) User Location Marker */}
         {userLocation && (
@@ -219,9 +217,7 @@ function HospitalMap() {
           >
             <div>
               <h4>{selectedHospital.name}</h4>
-              <p>
-                {selectedHospital.address}
-              </p>
+              <p>{selectedHospital.address}</p>
               {userLocation && (
                 <p>
                   {distanceKm(
@@ -243,7 +239,7 @@ function HospitalMap() {
           </InfoWindow>
         )}
       </GoogleMap>
-    </>
+    </div>
   );
 }
 

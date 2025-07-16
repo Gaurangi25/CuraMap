@@ -3,9 +3,10 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import "./EditHospital.css";
 
 function EditHospital() {
-  const { id } = useParams(); // Get hospital ID from URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
 
@@ -20,7 +21,6 @@ function EditHospital() {
 
   const [loading, setLoading] = useState(true);
 
-  // Fetch existing hospital data
   useEffect(() => {
     async function fetchHospital() {
       try {
@@ -76,8 +76,8 @@ function EditHospital() {
   if (loading) return <p>Loading hospital data...</p>;
 
   return (
-    <div className="edit-hospital-form" style={{ padding: "2rem" }}>
-      <h2>✏️ Edit Hospital</h2>
+    <div className="edit-hospital">
+      <h2 className="form-title">✏️ Edit Hospital</h2>
 
       <form onSubmit={handleSubmit} className="form-container">
         <label>
@@ -149,17 +149,18 @@ function EditHospital() {
           />
         </label>
 
-        <button type="submit" className="btn">
-          ✅ Save Changes
-        </button>
-        <button
-          type="button"
-          className="btn"
-          style={{ marginLeft: "1rem" }}
-          onClick={() => navigate("/my-hospitals")}
-        >
-          🔙 Cancel
-        </button>
+        <div className="form-actions">
+          <button type="submit" className="btn">
+            ✅ Save Changes
+          </button>
+          <button
+            type="button"
+            className="btn cancel-btn"
+            onClick={() => navigate("/my-hospitals")}
+          >
+            🔙 Cancel
+          </button>
+        </div>
       </form>
     </div>
   );
