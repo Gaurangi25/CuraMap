@@ -57,7 +57,7 @@
 
 1. **Clone the repo**  
    ```bash
-   git clone <your-repo-url>
+   git clone (https://github.com/Gaurangi25/CuraMap.git)
    cd curamap
 
 2. **Install dependencies**
@@ -71,16 +71,16 @@
 
 3. Set up environment variables
  Create a .env file in the server folder with:
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-GOOGLE_CLIENT_ID=your_google_oauth_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-CLIENT_URL=http://localhost:3000
+- MONGO_URI=your_mongodb_connection_string
+- JWT_SECRET=your_jwt_secret_key
+- GOOGLE_CLIENT_ID=your_google_oauth_client_id
+- GOOGLE_CLIENT_SECRET=your_google_client_secret
+- CLIENT_URL=http://localhost:3000
 
  Create a .env.local file in the client folder with:
-REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
-REACT_APP_API_BASE_URL=http://localhost:5000
+- REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+- REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
+- REACT_APP_API_BASE_URL=http://localhost:5000
 
 4. **Start the backend server**
       cd ../server
