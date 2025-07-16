@@ -29,7 +29,7 @@ function HospitalDetails() {
   // to fetch data from the backend
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/hospitals") //backend endpoint
+      .get(`${process.env.REACT_APP_API_BASE_URL}/api/hospitals`) //backend endpoint
       .then((res) => setHospitals(res.data)) //save data to setHospitals
       .catch((err) => {
         console.log("Error fetch Hospital List : ", err);
@@ -59,7 +59,7 @@ function HospitalDetails() {
 
   function handleReport(id) {
     axios
-      .patch(`http://localhost:5000/api/hospitals/${id}/report`)
+      .patch(`${process.env.REACT_APP_API_BASE_URL}/api/hospitals/${id}/report`)
       .then((res) => {
         console.log("Reported", res.data);
 

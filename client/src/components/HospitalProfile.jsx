@@ -14,7 +14,7 @@ function HospitalProfile() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/api/hospitals/${id}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/api/hospitals/${id}`)
       .then((res) => setHospital(res.data))
       .catch((err) => console.log("Error fetching hospital by ID", err));
   }, [id]);
