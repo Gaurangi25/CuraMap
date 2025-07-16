@@ -1,27 +1,70 @@
 :root {
-  --primary-color: #1565c0;
-  --accent-color: #4caf50;
-  --text-color: #1a1a1a;
-  --bg-color: #ffffff;
-  --form-bg: #f8f9fa;
-  --border-color: #ccc;
-  --error-color: #e53935;
+  /* Primary Brand Colors */
+  --primary-color: #5a189a; /* Royal Purple */
+  --secondary-color: #9d174d; /* Deep Rose Red */
+  --accent-color: #14b8a6; /* Teal Cyan Pulse */
 
-  /* fonts styling */
+  /* Backgrounds and Surfaces */
+  --bg-color: #f4f6fb; /* Clean Blue-White */
+  --surface-bg: #f0eefa; /* Soft Lavender Surface */
+  --form-bg: #ffffff; /* Pure White Form Area */
+  --border-color: #d1d5db; /* Light Gray Border */
+
+  /* Text and UI */
+  --text-color: #1e293b; /* Charcoal Navy */
+  --heading-color: #3b0764; /* Dark Regal Purple */
+  --button-hover: #7e22ce; /* Vibrant Purple Gradient Start */
+  --button-hover-alt: #be185d; /* Electric Red Gradient End */
+
+  /* Neumorphism-specific colors */
+  --neu-bg: #e0e0e0; /* Light surface for neu containers */
+  --neu-shadow-dark: rgba(163, 177, 198, 0.6); /* Bottom-right shadow */
+  --neu-shadow-light: rgba(255, 255, 255, 0.7); /* Top-left highlight */
+  --neu-inset-dark: rgba(163, 177, 198, 0.6); /* Inset dark */
+  --neu-inset-light: rgba(255, 255, 255, 0.6); /* Inset light */
+
+  /* Alerts */
+  --error-color: #dc2626; /* Strong Alert Red */
+  --success-color: #10b981; /* Emerald Green */
+  --info-color: #3b82f6; /* Sharp Blue Info */
+
+  /* Fonts */
   --font-style-1: "Winky Rough", sans-serif;
   --font-style-2: "Bungee", sans-serif;
   --font-style-poppins: "Poppins", sans-serif;
-  --font-style-roboto: "Rooto", sans-serif;
+  --font-style-roboto: "Roboto", sans-serif;
 }
 
 body.dark-mode {
-  --primary-color: #4b99d8;
-  --accent-color: #66bb6a;
-  --text-color: #393030;
-  --bg-color: #22242c;
-  --form-bg: #242530;
-  --border-color: #444;
-  --error-color: #ef5350;
+  /* Primary Brand Colors */
+  --primary-color: #6b3c9a; /* Soft Violet for Dark Mode */
+  --secondary-color: #f43f5e; /* Vivid Rose Red */
+  --accent-color: #2dd4bf; /* Bright Teal Pop */
+
+  /* Backgrounds and Surfaces */
+  --bg-color: #111827; /* Midnight Navy */
+  --surface-bg: #1c1f2b; /* Graphite Surface */
+  --form-bg: #1c1f2b; /* Near-Black Form Area */
+  --border-color: #374151; /* Steel Gray */
+
+  /* Text and UI */
+  --text-color: #bbc1ce; /* Soft White Text */
+  --heading-color: #c4b5fd; /* Soft Lilac for Headers */
+  --button-hover: #9333ea; /* Deep Purple Glow */
+  --button-hover-alt: #f43f5e; /* Strong Accent Pink */
+
+  /* Alerts */
+  --error-color: #f87171; /* Lively Red */
+  --success-color: #34d399; /* Neon Emerald */
+  --info-color: #60a5fa; /* Bright Info Blue */
+  
+
+  /* ✅ Neumorphism (optional fallback in dark, use only with careful background match) */
+  --neu-bg: #1e1e1e;
+  --neu-shadow-dark: rgba(0, 0, 0, 0.3);
+  --neu-shadow-light: rgba(255, 255, 255, 0.05);
+  --neu-inset-dark: rgba(0, 0, 0, 0.4);
+  --neu-inset-light: rgba(255, 255, 255, 0.1);
 }
 
 body {

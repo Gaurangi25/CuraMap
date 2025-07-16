@@ -22,17 +22,21 @@ function LandingPage() {
   }
 
   return (
-    <div className="role-selector">
-      <h2>Welcome to CuraMap</h2>
-      <p>Select how you want to continue:</p>
+    <div className="landing-wrapper">
+      <div className="glow-orbit">
+        <div className="landing-page">
+          <h2 className="landing-heading">Welcome to CuraMap</h2>
+          <p className="landing-para">Select how you want to continue:</p>
 
-      <div className="role-buttons">
-        <button onClick={handleUserClick} className="role-btn">
-          👤 Enter as User
-        </button>
-        <button onClick={handleAdminClick} className="role-btn">
-          🏥 Enter as Hospital Admin
-        </button>
+          <div className="landing-buttons">
+            <button onClick={handleUserClick} className="landing-btn">
+              Enter as User
+            </button>
+            <button onClick={handleAdminClick} className="landing-btn">
+              Enter as Hospital Admin
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

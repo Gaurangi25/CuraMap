@@ -1,109 +1,155 @@
-/* Hospital Form Body */
 .hospital-form {
-  background-color: var(--form-bg);
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 2rem 2rem;
+  background: var(--form-bg);
+  border-radius: 16px;
   border: 1px solid var(--border-color);
-  max-width: 500px;
-  margin: 40px auto;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(21, 101, 192, 0.1);
-  transition: all 0.3s ease-in-out;
-  animation: fadeIn 0.6s ease forwards;
+  box-shadow: 0 0 8px var(--heading-color)
 }
 
-/* Form Title */
 .form-title {
-  font-family: var(--font-style-2);
   text-align: center;
-  margin-bottom: 20px;
-  color: var(--primary-color);
-  font-size: 1.8rem;
+  font-size: 2rem;
+  font-family: var(--font-style-2);
+  color: var(--heading-color);
+  margin-bottom: 2rem;
 }
 
-/* Form Input Elements */
 .form-body {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 0.8rem;
 }
 
 .form-input,
 .form-select {
-  padding: 10px 14px;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
   font-family: var(--font-style-poppins);
-  font-size: 14px;
-  transition: box-shadow 0.2s ease;
+  background: var(--surface-bg);
+  border: 3px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-color);
+  outline: none;
+  transition: border-color 0.2s ease;
 }
 
 .form-input:focus,
 .form-select:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--primary-color);
-  border-color: var(--primary-color);
+  border-color: var(--accent-color);
+  background-color: var(--form-bg);
 }
 
+/* Checkbox (clean & modern) */
 .form-checkbox {
-  font-family: var(--font-style-poppins);
-  font-size: 15px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: #333;
+  font-family: var(--font-style-poppins);
+  font-size: 1rem;
+  color: var(--text-color);
+  cursor: pointer;
+  gap: 0.5rem;
 }
 
-/* Form Submit Button */
-.form-submit-btn {
-  padding: 12px;
-  font-size: 15px;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 6px;
+.form-checkbox input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--accent-color);
+  border-radius: 10px;
+  background-color: transparent;
   cursor: pointer;
-  font-family: var(--font-style-roboto);
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  position: relative;
+}
+
+.form-checkbox input[type="checkbox"]:checked {
+  background-color: var(--accent-color);
+}
+
+.form-checkbox input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  display: none;
+}
+
+.form-checkbox input[type="checkbox"]:checked::after {
+  display: block;
+}
+
+/* ✅ Button */
+.form-submit-btn {
+  padding: 0.85rem 1.5rem;
+  font-family: var(--font-style-poppins);
+  font-weight: 600;
+  font-size: 1rem;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .form-submit-btn:hover {
-  background-color: #0d47a1;
-  transform: scale(1.02);
+  background-color: var(--button-hover);
 }
 
-.form-submit-btn:disabled {
-  background-color: #9ebbdc;
-  cursor: not-allowed;
-}
-
-/* Form success message */
 .form-success-msg {
+  margin-top: 1rem;
   font-family: var(--font-style-poppins);
-  margin-top: 15px;
-  color: var(--accent-color);
+  color: var(--success-color);
   text-align: center;
-  animation: slideIn 0.4s ease forwards;
+  font-weight: 500;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.form-navigation {
+  margin-top: 2rem;
+  text-align: center;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+.form-view-button {
+  background-color: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  font-family: var(--font-style-poppins);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.7rem 1.3rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-view-button:hover {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* ✅ Responsive */
+@media (max-width: 600px) {
+  .hospital-form {
+    padding: 2rem;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .form-title {
+    font-size: 1.6rem;
+  }
+
+  .form-input,
+  .form-select {
+    font-size: 0.95rem;
+  }
+
+  .form-submit-btn,
+  .form-view-button {
+    font-size: 0.95rem;
   }
 }

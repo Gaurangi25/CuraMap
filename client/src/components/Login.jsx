@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import "./Auth.css";
+import "./Login.css";
 
 function Login() {
   // user → Get the current logged-in user's data (like name/email)
@@ -44,55 +44,57 @@ function Login() {
   }
 
   return (
-    <div className="auth-container">
-      <h2 className="auth-heading">🔐 Login</h2>
+    <div className="login-wrapper">
+      <div className="login-glow">
+        <div className="login-container">
+          {" "}
+          <h2 className="login-heading">🔐 Login</h2>
+          <form onSubmit={handleSubmit} className="login-form">
+            <label className="login-label">
+              📧 Email:
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+                className="login-input"
+                placeholder="Enter your email"
+              />
+            </label>
 
-      <form onSubmit={handleSubmit} className="auth-form">
-        <label className="auth-label">
-          📧 Email:
-          <input
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-            className="auth-input"
-            placeholder="Enter your email"
-          />
-        </label>
+            <label className="login-label">
+              <span>🔑 Password:</span>
+              <input
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+                className="login-input"
+                placeholder="Enter your password"
+              />
+            </label>
 
-        <label>
-          🔑 Password:
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-            className="auth-input"
-            placeholder="Enter your password"
-          />
-        </label>
+            {error && <p className="login-error">❌ {error}</p>}
 
-        {error && <p className="auth-error">❌ {error}</p>}
-
-        <button type="submit" className="auth-button">
-          Login
-        </button>
-      </form>
-
-      {/* Google OAuth login */}
-      <div className="oauth-section">
-        <a
-          href={`${process.env.REACT_APP_API_BASE_URL}/api/auth/google`}
-          className="google-btn"
-        >
-          <img src="/google.png" alt="Google" className="google-icon" />
-          <span className="google-text">Login with Google</span>
-        </a>
+            <button type="submit" className="login-button">
+              Login
+            </button>
+          </form>
+          {/* Google OAuth login */}
+          <div className="login-section">
+            <a
+              href={`${process.env.REACT_APP_API_BASE_URL}/api/auth/google`}
+              className="google-btn"
+            >
+              <img src="/google.png" alt="Google" className="google-icon" />
+              <span className="google-text">Login with Google</span>
+            </a>
+          </div>
+          <p className="login-footer">
+            Don't have an account? <a href="/signup">Sign up</a>
+          </p>
+        </div>
       </div>
-
-      <p className="auth-footer">
-        Don't have an account? <a href="/signup">Sign up</a>
-      </p>
     </div>
   );
 }

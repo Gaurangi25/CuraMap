@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate} from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import "./Auth.css";
+import "./Signup.css";
 
 function Signup() {
   const [form, setForm] = useState({
@@ -51,6 +51,8 @@ function Signup() {
   }
 
   return (
+    <div className="auth-wrapper">
+      <div className="auth-glow">
     <div className="auth-container">
       <h2 className="auth-heading">📝 Sign Up</h2>
 
@@ -114,6 +116,8 @@ function Signup() {
       <p className="auth-footer">
         Already have an account? <a href="/login">Log in</a>
       </p>
+    </div>
+    </div>
     </div>
   );
 }

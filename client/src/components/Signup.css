@@ -1,0 +1,198 @@
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 65vh;
+  background-color: var(--bg-color);
+  padding: 2rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.auth-glow {
+  position: relative;
+  border-radius: 30px;
+  z-index: 0;
+  width: 639px;
+  height: 700px;
+}
+
+.auth-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  padding: 2px;
+  background: conic-gradient(
+    from 0deg,
+    var(--accent-color),
+    var(--button-hover),
+    var(--secondary-color),
+    var(--accent-color)
+  );
+  filter: blur(10px);
+  z-index: -1;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.auth-container {
+  background: var(--form-bg);
+  margin-top: 6px;
+  margin-left: 5px;
+  border-radius: 24px;
+  padding: 3rem 4rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 0 20px var(--neu-shadow-dark),
+    inset -2px -2px 4px var(--neu-inset-light),
+    inset 2px 2px 6px var(--neu-inset-dark);
+  backdrop-filter: blur(10px);
+  z-index: 1;
+}
+
+.auth-heading {
+  text-align: center;
+  font-size: 2rem;
+  font-family: var(--font-style-2);
+  color: var(--heading-color);
+  margin-bottom: 2rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.auth-label {
+  font-family: var(--font-style-poppins);
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.auth-input {
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  font-family: var(--font-style-poppins);
+  background: var(--neu-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  outline: none;
+  color: var(--text-color);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+}
+
+.auth-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.35);
+  background-color: #fefeff;
+}
+
+.auth-button {
+  padding: 0.9rem 1.5rem;
+  font-family: var(--font-style-poppins);
+  font-weight: 600;
+  font-size: 1rem;
+  background-color: var(--primary-color);
+  color: var(--bg-color);
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: background 0.4s ease, transform 0.2s ease;
+}
+
+.auth-button:hover {
+  background-image: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--button-hover),
+    var(--button-hover-alt)
+  );
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px var(--accent-color);
+}
+
+.auth-error {
+  color: var(--error-color);
+  font-family: var(--font-style-poppins);
+  text-align: center;
+  font-weight: 600;
+}
+
+.oauth-section {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0 1rem;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background-color: var(--surface-bg);
+  border: 2px solid var(--accent-color);
+  color: var(--text-color);
+  padding: 0.7rem 1.2rem;
+  border-radius: 40px;
+  font-family: var(--font-style-poppins);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.google-btn:hover {
+  background-image: linear-gradient(
+    to right,
+    var(--accent-color),
+    var(--button-hover)
+  );
+  color: #fff;
+  box-shadow: 0 0 10px var(--accent-color);
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1rem;
+  font-family: var(--font-style-poppins);
+  font-size: 0.9rem;
+}
+
+.auth-footer a {
+  color: var(--primary-color);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .auth-container {
+    padding: 2rem;
+  }
+
+  .auth-heading {
+    font-size: 1.6rem;
+  }
+
+  .auth-input,
+  .auth-button,
+  .google-btn {
+    font-size: 0.9rem;
+  }
+}
