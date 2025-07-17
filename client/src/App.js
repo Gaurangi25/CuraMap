@@ -10,6 +10,7 @@ import HospitalProfile from "./components/HospitalProfile";
 import LandingPage from "./components/LandingPage";
 import MyHospitals from "./components/MyHospitals";
 import EditHospital from "./components/EditHospital";
+import UserDashboard from "./components/UserDashboard";
 
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -54,10 +55,7 @@ function App() {
           path="/user"
           element={
             <PrivateRoute>
-              <>
-                <HospitalDetails />
-                <HospitalMap />
-              </>
+              <UserDashboard />
             </PrivateRoute>
           }
         />
