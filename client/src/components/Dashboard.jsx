@@ -7,6 +7,11 @@ function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  function handleLogout() {
+    logout();
+    navigate("/");
+  }
+
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-glow">
@@ -28,6 +33,10 @@ function Dashboard() {
               onClick={() => navigate("/my-hospitals")}
             >
               View My Hospitals
+            </button>
+
+            <button className="dashboard-btn" onClick={handleLogout}>
+              Logout
             </button>
           </div>
         </div>
