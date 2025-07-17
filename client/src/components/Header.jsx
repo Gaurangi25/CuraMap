@@ -30,7 +30,7 @@ function Header() {
         <Link to="/">Home</Link>
         <Link to="/admin">Add Hospital</Link>
         <Link to="/my-hospitals">My Entries</Link>
-        <Link to="/login">Login</Link>
+        <Link to="/logout">Logout</Link>
       </nav>
 
       {/* <div className="toggle-button-wrapper">
