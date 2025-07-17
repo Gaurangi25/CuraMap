@@ -47,7 +47,7 @@ router.get(
     console.log("Google login success. req.user = ", req.user);
     console.log("Redirecting to:", `${CLIENT_URL}/oauth?token=${token}`);
 
-    res.redirect(`${CLIENT_URL}/oauth?token=${token}`);
+    return res.redirect(`${CLIENT_URL}/oauth?token=${token}`);
   }
 );
 
@@ -98,12 +98,12 @@ router.post("/signup", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    console.log("Local signup success. JWT payload:");
-    console.log({
+    //console.log("Local signup success. JWT payload:");
+    /*console.log({
       id: newUser._id,
       email: newUser.email,
       name: newUser.name,
-    });
+    });*/
 
     res.status(201).json({
       token,
@@ -139,7 +139,7 @@ router.post("/login", async (req, res) => {
         email: user.email,
         name: user.name,
       },
-      process.env.JWT_SECRET || "defaultsecret",
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 

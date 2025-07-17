@@ -19,7 +19,7 @@ function OAuthHandler() {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        console.log("Decoded token:", decoded);
+        //console.log("Decoded token:", decoded);
         //alert("Decoded name: " + decoded.name);
 
         const user = {
@@ -28,7 +28,7 @@ function OAuthHandler() {
           name: decoded.name || "Google User", // fallback name
         };
 
-        console.log("Constructed user object:", user);
+        //console.log("Constructed user object:", user);
 
         login(token, user);
         console.log("Login function called");
