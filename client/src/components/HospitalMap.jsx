@@ -60,7 +60,8 @@ function HospitalMap() {
   const [userLocation, setUserLocation] = useState(null);
 
   // Radius in metres
-  const [radius, setRadius] = useState(5000);
+  // const [radius, setRadius] = useState(5000);
+const [radius, setRadius] = useState(10000);
 
   const [loading, setLoading] = useState(false);
 
@@ -84,7 +85,7 @@ function HospitalMap() {
 
     axios
       .get(
-        `/api/hospitals/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&r=${radius}`
+        `${process.env.REACT_APP_API_BASE_URL}/api/hospitals/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&r=${radius}`
       )
       .then((res) => {
         const data = res.data;
@@ -129,21 +130,30 @@ function HospitalMap() {
   const handleSearch = () => {
     if (!search.trim()) return;
 
-    //Trying to match hospital by name
-    const match =
-      Array.isArray(hospitals) && hospitals.length
-        ? hospitals.find((hospital) =>
-            hospital.name.toLowerCase().includes(search.toLowerCase())
-          )
-        : null;
+    axios
+      .get(`${process.env.REACT_APP_API_BASE_URL}/api/hospitals`)
+      .then((res) => {
+        const allHospitals = res.data;
+        const match = allHospitals.find((hospital) =>
+          hospital.name.toLowerCase().includes(search.toLowerCase())
+        );
 
-    if (match) {
-      setUserLocation({ lat: match.latitude, lng: match.longitude });
-      setSelectedId(match._id);
-      return;
-    } else {
-      alert("No hospital found with that name");
-    }
+        console.log(
+          "All hospitals loaded:",
+          allHospitals.map((h) => h.name)
+        );
+
+        if (match) {
+          setUserLocation({ lat: match.latitude, lng: match.longitude });
+          setSelectedId(match._id);
+        } else {
+          alert("No hospital found with that name");
+        }
+      })
+      .catch((err) => {
+        console.error("Search failed", err);
+        alert("Error while searching hospital");
+      });
   };
 
   // To find the selected hospital to show InfoWindow
@@ -201,6 +211,13 @@ function HospitalMap() {
 
       {loading && (
         <p className="map-loading-text">Loading nearby hospitals...</p>
+      )}
+
+      {!loading && hospitals.length === 0 && (
+        <p className="no-hospitals-warning">
+          ⚠️ No hospitals found in this area. Try increasing radius or adding
+          some entries.
+        </p>
       )}
 
       <GoogleMap
