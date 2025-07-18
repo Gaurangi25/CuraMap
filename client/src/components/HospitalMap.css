@@ -1,6 +1,6 @@
 .map-container {
   padding: 1.5rem;
-  background-color: var(--card-bg);
+  background-color: var(--surface-bg);
   color: var(--text-color);
   font-family: var(--font-style-1);
   border-radius: 12px;
@@ -25,13 +25,19 @@
   border: 1px solid var(--accent-color);
   border-radius: 6px;
   font-size: 1rem;
-  background-color: var(--input-bg);
+  background-color: var(--form-bg);
   color: var(--text-color);
+  transition: border-color 0.3s ease;
+}
+
+.map-search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
 }
 
 .map-search-button {
   padding: 0.5rem 1.1rem;
-  background-color: var(--button-color);
+  background-color: var(--accent-color);
   color: white;
   font-weight: bold;
   border: none;
@@ -58,14 +64,21 @@
   padding: 0.4rem 0.6rem;
   border: 1px solid var(--accent-color);
   border-radius: 6px;
-  background-color: var(--card-bg);
+  background-color: var(--form-bg);
   color: var(--text-color);
 }
 
 /* 🌀 Loading message */
 .map-loading-text {
   font-style: italic;
-  color: var(--muted-text-color);
+  color: var(--info-color);
+  margin-bottom: 1rem;
+}
+
+/* ❌ No Hospitals Warning */
+.no-hospitals-warning {
+  font-style: italic;
+  color: var(--error-color);
   margin-bottom: 1rem;
 }
 
@@ -73,13 +86,13 @@
 .gm-style .gm-style-iw-c {
   padding: 0.8rem !important;
   font-family: var(--font-style-1);
-  background-color: var(--card-bg);
+  background-color: var(--form-bg);
 }
 
 .gm-style .gm-style-iw-c h4 {
   margin: 0 0 0.25rem 0;
   font-size: 1.1rem;
-  color: var(--accent-color);
+  color: var(--heading-color);
 }
 
 .gm-style .gm-style-iw-c p {
@@ -90,26 +103,26 @@
 
 /* 🌙 Dark Mode Overrides */
 body.dark .map-container {
-  background-color: var(--card-bg-dark);
-  color: var(--text-color-dark);
+  background-color: var(--surface-bg);
+  color: var(--text-color);
 }
 
 body.dark .map-search-input {
-  background-color: var(--input-bg-dark);
-  color: var(--text-color-dark);
+  background-color: var(--form-bg);
+  color: var(--text-color);
   border-color: var(--accent-color);
 }
 
 body.dark .map-radius-selector select {
-  background-color: var(--card-bg-dark);
-  color: var(--text-color-dark);
+  background-color: var(--form-bg);
+  color: var(--text-color);
 }
 
 body.dark .gm-style .gm-style-iw-c {
-  background-color: var(--card-bg-dark);
+  background-color: var(--form-bg);
 }
 
 body.dark .gm-style .gm-style-iw-c h4,
 body.dark .gm-style .gm-style-iw-c p {
-  color: var(--text-color-dark);
+  color: var(--text-color);
 }

@@ -209,3 +209,7 @@ Keeps route files clean
 Makes your code modular and readable
 
 Makes it easier to test and maintain
+
+____________________________________________________
+
+https://curamap.onrender.com/api/hospitals
