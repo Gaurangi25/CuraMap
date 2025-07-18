@@ -7,10 +7,10 @@ function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  function handleLogout() {
+  /*function handleLogout() {
     logout();
     navigate("/");
-  }
+  }*/
 
   return (
     <div className="dashboard-wrapper">
@@ -35,9 +35,9 @@ function Dashboard() {
               View My Hospitals
             </button>
 
-            <button className="dashboard-btn" onClick={handleLogout}>
+            {/* <button className="dashboard-btn" onClick={handleLogout}>
               Logout
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

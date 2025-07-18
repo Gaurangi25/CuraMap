@@ -8,9 +8,9 @@ function Logout() {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();           // clears localStorage + user state
-    navigate("/"); 
+  const handleLogout = async () => {
+    await logout(); // clears localStorage + user state
+    setTimeout(() => navigate("/"), 200);
   };
 
   return (

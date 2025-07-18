@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./Header.css";
 
 function Header() {
   const [darkMode, setDarkMode] = useState(false);
+  const {logout} = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
@@ -22,6 +25,12 @@ function Header() {
     });
   };
 
+  const handleLogout = () =>{
+    console.log("logout is called");
+    logout();
+    navigate("/");
+  }
+
   return (
     <header className="header">
       <div className="header-logo">Curamap</div>
@@ -30,7 +39,7 @@ function Header() {
         <Link to="/">Home</Link>
         <Link to="/admin">Add Hospital</Link>
         <Link to="/my-hospitals">My Entries</Link>
-        <Link to="/logout">Logout</Link>
+        <span onClick={handleLogout} className="logout-link">Logout</span>
       </nav>
 
       {/* <div className="toggle-button-wrapper">

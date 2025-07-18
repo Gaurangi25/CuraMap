@@ -28,7 +28,11 @@ const defaultCenter = {
 };
 
 // Add "marker" library to be future ready (as its deprecated currently)
-const libraries = ["marker"];
+const libraries = ["places", "geometry", "marker"];
+
+// const options = {
+//   zoomControl: true,
+// };
 
 /*Haversine formula -> 
 The standard way to compute the great‑circle distance between two latitude/longitude points on Earth.
@@ -64,7 +68,7 @@ function HospitalMap() {
   const [search, setSearch] = useState("");
 
   //load Google Maps API
-  const { isLoaded } = useJsApiLoader({
+  const { isLoaded, loadError } = useJsApiLoader({
     // secret API key from .env.local
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     libraries,
@@ -102,11 +106,15 @@ function HospitalMap() {
         },
         () => {
           console.warn("Geolocation access denied or unavailable");
+          setUserLocation(defaultCenter);
         }
       );
+    } else {
+      setUserLocation(defaultCenter);
     }
   }, []);
 
+  if (loadError) return <p>Error loading map</p>;
   if (!isLoaded) return <p>Loading Map...</p>;
 
   const handleSearch = () => {
@@ -179,7 +187,9 @@ function HospitalMap() {
         </select>
       </div>
 
-      {loading && <p className="map-loading-text">Loading nearby hospitals...</p>}
+      {loading && (
+        <p className="map-loading-text">Loading nearby hospitals...</p>
+      )}
 
       <GoogleMap
         //mapContainerStyle → tells it how big to draw
@@ -190,7 +200,9 @@ function HospitalMap() {
         zoom={userLocation ? 13 : 12}
       >
         {/* Hospital markers with clustering */}
-        <MarkerClusterer>{(clusterer) => renderMarkers(clusterer)}</MarkerClusterer>
+        <MarkerClusterer>
+          {(clusterer) => renderMarkers(clusterer)}
+        </MarkerClusterer>
 
         {/* (Blue Marker) User Location Marker */}
         {userLocation && (
