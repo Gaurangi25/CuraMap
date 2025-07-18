@@ -23,7 +23,7 @@ function PrivateRoute({ children }) {
     // replace means user goes to the login page...and this page is not saved in the history
   }
 
-  // shows dashboard page on loggin in
+  // shows dashboard page on logging in
   return children;
 }
 

@@ -9,8 +9,17 @@ function Logout() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await logout(); // clears localStorage + user state
-    setTimeout(() => navigate("/"), 200);
+    try {
+      await logout(); // clear auth state
+      console.log("Logout Successful");
+      alert("Logout successful!");
+      // setTimeout(() => {
+      //   navigate("/");
+      // }, 200);
+    } catch (err) {
+      console.error("Logout failed:", err);
+      alert("Something went wrong during logout.");
+    }
   };
 
   return (

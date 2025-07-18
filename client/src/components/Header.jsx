@@ -5,7 +5,7 @@ import "./Header.css";
 
 function Header() {
   const [darkMode, setDarkMode] = useState(false);
-  const {logout} = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,12 +25,18 @@ function Header() {
     });
   };
 
-  const handleLogout = () =>{
-    console.log("logout is called");
+  const handleLogout = () => {
+    if (!user) {
+      alert("You're already logged out.");
+      return;
+    }
+
+    console.log("Logout is called");
+    alert("Logout Successful!");
     logout();
     navigate("/");
-  }
-
+  };
+  
   return (
     <header className="header">
       <div className="header-logo">Curamap</div>
@@ -39,7 +45,9 @@ function Header() {
         <Link to="/">Home</Link>
         <Link to="/admin">Add Hospital</Link>
         <Link to="/my-hospitals">My Entries</Link>
-        <span onClick={handleLogout} className="logout-link">Logout</span>
+        <span onClick={handleLogout} className="logout-link">
+          Logout
+        </span>
       </nav>
 
       {/* <div className="toggle-button-wrapper">
@@ -53,8 +61,7 @@ function Header() {
         onClick={toggleTheme}
       >
         <div className="theme-toggle-btn">
-          <div className="toggle-pill">
-          </div>
+          <div className="toggle-pill"></div>
         </div>
       </div>
     </header>

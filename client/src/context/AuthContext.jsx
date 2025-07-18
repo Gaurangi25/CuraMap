@@ -12,12 +12,12 @@ export function useAuth() {
 // Provider component
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
 
   // Load saved login info from localStorage
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
-    
+
     if (savedToken) {
       try {
         const decoded = jwtDecode(savedToken);
@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
         setToken(savedToken);
         setUser(userFromToken);
 
-        console.log("✅ Auth restored from token:", userFromToken);
+        //console.log("Auth restored from token:", userFromToken);
       } catch (err) {
         console.warn("⚠️ Invalid token in localStorage. Clearing...");
         localStorage.removeItem("token");
