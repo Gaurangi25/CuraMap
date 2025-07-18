@@ -14,6 +14,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
 
+  const [loading, setLoading] = useState(true);
+
   // Load saved login info from localStorage
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
@@ -37,12 +39,13 @@ export function AuthProvider({ children }) {
         localStorage.removeItem("token");
       }
     }
+    setLoading(false);
   }, []);
 
   // Save login info
   function login(newToken, newUser) {
-    console.log("Saving token to context/localStorage:", newToken);
-    console.log("Saving user to context", newUser);
+    //console.log("Saving token to context/localStorage:", newToken);
+    //console.log("Saving user to context", newUser);
 
     setToken(newToken);
     setUser(newUser);

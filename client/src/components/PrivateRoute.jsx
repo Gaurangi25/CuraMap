@@ -11,10 +11,10 @@ In react <PrivateRoute>
 */
 
 function PrivateRoute({ children }) {
-  const { token } = useAuth(); //this gives the store JWT in token
+  const { token, loading } = useAuth(); //this gives the store JWT in token
 
   // Don't render anything if token check hasn't completed yet
-  if (token === null) {
+  if (loading) {
     return <p>Checking authentication...</p>; // or a loader
   }
 

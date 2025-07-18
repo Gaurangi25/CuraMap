@@ -67,6 +67,8 @@ function HospitalMap() {
   // User input for city or hospital search
   const [search, setSearch] = useState("");
 
+  console.log("Hospitals state:", hospitals);
+
   //load Google Maps API
   const { isLoaded, loadError } = useJsApiLoader({
     // secret API key from .env.local
@@ -85,9 +87,16 @@ function HospitalMap() {
         `/api/hospitals/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&r=${radius}`
       )
       .then((res) => {
-        console.log("Nearby hospitals from API:", res.data);
-        setHospitals(res.data);
+        const data = res.data;
+        console.log("Nearby hospitals from API:", data);
+        //setHospitals(res.data);
         //console.log("Fetched Hospital ->", res.data);
+        if (Array.isArray(data)) {
+          setHospitals(data);
+        } else {
+          console.warn("⚠️ Invalid hospital data received:", data);
+          setHospitals([]);
+        }
       })
       .catch((err) => console.error("Failed to fetch hospitals", err))
       .finally(() => setLoading(false));
@@ -121,9 +130,12 @@ function HospitalMap() {
     if (!search.trim()) return;
 
     //Trying to match hospital by name
-    const match = hospitals.find((hospital) =>
-      hospital.name.toLowerCase().includes(search.toLowerCase())
-    );
+    const match =
+      Array.isArray(hospitals) && hospitals.length
+        ? hospitals.find((hospital) =>
+            hospital.name.toLowerCase().includes(search.toLowerCase())
+          )
+        : null;
 
     if (match) {
       setUserLocation({ lat: match.latitude, lng: match.longitude });
@@ -135,9 +147,9 @@ function HospitalMap() {
   };
 
   // To find the selected hospital to show InfoWindow
-  const selectedHospital = hospitals.find(
-    (hospital) => hospital._id === selectedId
-  );
+  const selectedHospital = Array.isArray(hospitals)
+    ? hospitals.find((hospital) => hospital._id === selectedId)
+    : null;
 
   const renderMarkers = (clusterer) =>
     hospitals.map((hospital) => (
