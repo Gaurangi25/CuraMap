@@ -41,7 +41,7 @@ export const nearbyHospitals = async (req, res) => {
     });
 
     // resulting hospital array
-    return res.status(200).json(hospitals);
+    return res.status(200).json(hospitals || []);
   } catch (err) {
     console.error("Error fetching nearby hospitals:", err);
     return res.status(500).json({ msg: "Something went wrong", error: err });

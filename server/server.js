@@ -17,10 +17,15 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://cura-map.vercel.app"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
-// to get nearby hospitals 
+// to get nearby hospitals
 app.use("/api/hospitals", hospitalRoutes);
 
 app.get("/", (req, res) => {
@@ -36,9 +41,9 @@ app.use(
 
     /* Warning: connect.session() MemoryStore is not -> for this error express-mongo is used */
     store: MongoStore.create({
-      mongoUrl : process.env.MONGO_URI,
-      collectionName : "sessions",
-    })
+      mongoUrl: process.env.MONGO_URI,
+      collectionName: "sessions",
+    }),
   })
 );
 
