@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import MongoStore from "connect-mongo";
 
 import session from "express-session";
 import passport from "./config/passport.js";
@@ -32,6 +33,12 @@ app.use(
     secret: process.env.SESSION_SECRET || "sessionsecret",
     resave: false,
     saveUninitialized: false,
+
+    /* Warning: connect.session() MemoryStore is not -> for this error express-mongo is used */
+    store: MongoStore.create({
+      mongoUrl : process.env.MONGO_URI,
+      collectionName : "sessions",
+    })
   })
 );
 
