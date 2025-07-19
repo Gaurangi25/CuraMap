@@ -37,21 +37,25 @@
 
 ---
 
-## 🔄 Current Status
+## 📸 Screenshots
 
-- ✅ Core features: Authentication, hospital CRUD, map integration
-- ⚠️ Resource data (beds, oxygen, ambulances) uses **dummy inputs** for now
-- 🔧 Real hospital data via Google Places API — _in progress_
-- 🖌️ UI polishing, logo integration, and full deployment — _ongoing_
+Here are a few highlights from CuraMap.  
+See the rest in the [`screenshots/`](./Screenshots) folder.
 
----
+### 🏠 Landing Page - Dark Theme
+![Landing Page - Dark Theme](./Screenshots/1.png)
 
-## 🌟 Future Plans
+### 🏠 Landing Page - Light Theme
+![Landing Page - Light Theme](./Screenshots/2.png)
 
-- 🚨 Push notifications for urgent hospital updates
-- 📈 Advanced analytics dashboard
-- ♿ Accessibility upgrades (keyboard nav, ARIA, contrast)
-- 🚀 Performance optimizations & scalability
+### ➕ Add Hospital
+![Add Hospital](./Screenshots/8.png)
+
+### 📍 Hospital Map View
+![Map View](./Screenshots/10.png)
+
+### 🔍 View Hospitals
+![View Hospital](./Screenshots/5.png)
 
 ---
 
