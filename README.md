@@ -2,93 +2,103 @@
 
 **CuraMap** is your go-to full-stack app for finding hospitals and healthcare facilities with live updates on essential resources like beds, oxygen, and ambulances — all mapped out for easy access!
 
+🌐 [Live Demo → cura-map.vercel.app](https://cura-map.vercel.app)
+
 ---
 
 ## 🚀 Features
 
-- 🔍 **Search & Filter Hospitals** by name, location, and available resources  
-- 🗺️ **Interactive Google Maps** with clickable hospital markers  
-- 🏥 **Hospital Entry Management** — Add, update, or delete your hospital info securely  
-- 🔐 **User Authentication** with email/password & Google OAuth using JWT  
-- 📊 **Live Resource Availability** for beds, oxygen, ambulances *(currently using dummy data)*  
-- 🛡️ **Protected Routes** to keep hospital data safe and accurate  
-- ⚙️ **Robust Backend API** with Express.js & MongoDB Atlas  
+- 🔍 **Search & Filter Hospitals** by name, location, and available resources
+- 🗺️ **Interactive Google Maps** with clickable hospital markers
+- 🏥 **Hospital Entry Management** — Add, update, or delete your hospital info securely
+- 🔐 **User Authentication** with email/password & Google OAuth using JWT
+- 📊 **Live Resource Availability** for beds, oxygen, ambulances _(currently using dummy data)_
+- 🛡️ **Protected Routes** to keep hospital data safe and accurate
+- ⚙️ **Robust Backend API** with Express.js & MongoDB Atlas
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React.js + React Router + CSS  
-- **Backend:** Node.js + Express.js  
-- **Database:** MongoDB Atlas with Mongoose  
-- **Authentication:** JWT + Passport.js (Google OAuth)  
+- **Frontend:** React.js + React Router + CSS
+- **Backend:** Node.js + Express.js
+- **Database:** MongoDB Atlas with Mongoose
+- **Authentication:** JWT + Passport.js (Google OAuth)
 - **Maps:** Google Maps JavaScript API
 
 ---
 
 ## 💡 How It Works
 
-1. Find hospitals near you or by name, with real-time data on resource availability.  
-2. View hospitals on the map, click markers for detailed info.  
-3. Hospital admins can securely log in to manage their hospital details.  
-4. Data syncs dynamically via a secure backend API using JWT tokens.  
+1. **Find hospitals** near you or by name — with real-time data on available beds, oxygen, and ambulances.
+2. View hospitals **on the map** with detailed info in clickable markers.
+3. **Hospital admins** can securely log in to manage their entries (add/update/delete).
+4. All data syncs via a secure **backend API** with JWT-based route protection.
 
 ---
 
 ## 🔄 Current Status
 
-- Core features (auth, CRUD for hospitals, map integration) ✅  
-- Resource availability data (beds, oxygen, ambulances) currently uses **dummy data** for demo purposes  
-- Fetching real hospital data with Google Places API — *in progress* 🔧  
-- UI improvements and deployment setup ongoing 🚧  
+- ✅ Core features: Authentication, hospital CRUD, map integration
+- ⚠️ Resource data (beds, oxygen, ambulances) uses **dummy inputs** for now
+- 🔧 Real hospital data via Google Places API — _in progress_
+- 🖌️ UI polishing, logo integration, and full deployment — _ongoing_
 
 ---
 
 ## 🌟 Future Plans
 
-- Push notifications for urgent updates 🚨  
-- Advanced analytics dashboard 📈  
-- Accessibility improvements ♿  
-- Performance and scalability enhancements 🚀  
+- 🚨 Push notifications for urgent hospital updates
+- 📈 Advanced analytics dashboard
+- ♿ Accessibility upgrades (keyboard nav, ARIA, contrast)
+- 🚀 Performance optimizations & scalability
 
 ---
 
-## 🚀 How to Run CuraMap Locally
+## 🧪 How to Run CuraMap Locally
 
-1. **Clone the repo**  
-   ```bash
-   git clone (https://github.com/Gaurangi25/CuraMap.git)
-   cd curamap
+### 1. **Clone the repo**
 
-2. **Install dependencies**
-    **For backend:**
-      cd server
-      npm install
+```bash
+git clone https://github.com/Gaurangi25/CuraMap.git
+cd CuraMap
+```
 
-   **For frontend:**
-      cd ../client
-      npm install
+### 2. **Install Dependencies**
 
-3. Set up environment variables
- Create a .env file in the server folder with:
-- MONGO_URI=your_mongodb_connection_string
-- JWT_SECRET=your_jwt_secret_key
-- GOOGLE_CLIENT_ID=your_google_oauth_client_id
-- GOOGLE_CLIENT_SECRET=your_google_client_secret
-- CLIENT_URL=http://localhost:3000
+Backend ->
+cd server
+npm install
 
- Create a .env.local file in the client folder with:
-- REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-- REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
-- REACT_APP_API_BASE_URL=http://localhost:5000
+Frontend ->
+cd ../client
+npm install
 
-4. **Start the backend server**
-      cd ../server
-      npm start
+### 3. **Set Up Environment Variables**
+Create .env in /server:
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+GOOGLE_CLIENT_ID=your_google_oauth_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+CLIENT_URL=http://localhost:3000
+SERVER_URL=http://localhost:5000
+SESSION_SECRET=some_random_long_string_here
 
-5. **Start the frontend app**
-      cd ../client
-      npm start
+Create .env.local in /client:
 
-6. **Open in browser**
-    Go to http://localhost:3000 to use CuraMap! 🎉
+REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
+REACT_APP_API_BASE_URL=http://localhost:5000
+
+### 4. **Start the backend**
+cd ../server
+nodemon server.js
+
+### 5. **Start the frontend**
+cd ../client
+npm start
+
+### 6. **Open the app in browser**
+Go to: http://localhost:3000
+
+

@@ -44,7 +44,7 @@ function Header() {
       </Link>
 
       <nav className="nav-links">
-        <Link to="/user">View Hospitals</Link>
+        <Link to="/">Home</Link>
         <Link to="/admin">Add Hospital</Link>
         <Link to="/my-hospitals">My Entries</Link>
         <span onClick={handleLogout} className="logout-link">
