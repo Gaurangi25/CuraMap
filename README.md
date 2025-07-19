@@ -105,4 +105,8 @@ npm start
 ### 6. **Open the app in browser**
 Go to: http://localhost:3000
 
+---
+Thanks for checking out **CuraMap**! 🚑  
+
+---
 
