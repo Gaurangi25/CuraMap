@@ -1,15 +1,15 @@
-// EditHospital.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import "./EditHospital.css";
+import "./AddHospitalForm.css";
 
 function EditHospital() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useAuth();
 
+  // Form state to hold hospital info
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -21,6 +21,7 @@ function EditHospital() {
 
   const [loading, setLoading] = useState(true);
 
+  // Fetch the hospital data from backend when component mounts
   useEffect(() => {
     async function fetchHospital() {
       try {
@@ -32,7 +33,7 @@ function EditHospital() {
             },
           }
         );
-        setFormData(res.data);
+        setFormData(res.data); // Populate form with existing data
         setLoading(false);
       } catch (err) {
         console.error("Error fetching hospital:", err);
@@ -44,6 +45,7 @@ function EditHospital() {
     if (token) fetchHospital();
   }, [id, token, navigate]);
 
+  // Handle form input change
   function handleChange(e) {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -52,6 +54,7 @@ function EditHospital() {
     }));
   }
 
+  // Submit updated data to backend
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -73,89 +76,86 @@ function EditHospital() {
     }
   }
 
+  // Loading indicator
   if (loading) return <p>Loading hospital data...</p>;
 
   return (
-    <div className="edit-hospital">
+    <div className="hospital-form">
       <h2 className="form-title">✏️ Edit Hospital</h2>
 
-      <form onSubmit={handleSubmit} className="form-container">
-        <label>
-          Name:
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </label>
+      {/* Edit Form */}
+      <form onSubmit={handleSubmit} className="form-body">
+        <input
+          className="form-input"
+          type="text"
+          placeholder="Hospital Name"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
 
-        <label>
-          Address:
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            required
-          />
-        </label>
+        <input
+          className="form-input"
+          type="text"
+          placeholder="Address"
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+          required
+        />
 
-        <label>
-          Type:
-          <select
-            name="type"
-            value={formData.type}
-            onChange={handleChange}
-            required
-          >
-            <option value="general">General</option>
-            <option value="specialized">Specialized</option>
-            <option value="clinic">Clinic</option>
-          </select>
-        </label>
+        <select
+          className="form-select"
+          name="type"
+          value={formData.type}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Select Type</option>
+          <option value="general">General</option>
+          <option value="specialized">Specialized</option>
+          <option value="clinic">Clinic</option>
+        </select>
 
-        <label>
-          Available Beds:
-          <input
-            type="number"
-            name="availableBeds"
-            value={formData.availableBeds}
-            onChange={handleChange}
-            min="0"
-          />
-        </label>
+        <input
+          className="form-input"
+          type="number"
+          placeholder="Available Beds"
+          name="availableBeds"
+          value={formData.availableBeds}
+          onChange={handleChange}
+          min="0"
+        />
 
-        <label>
-          Available Oxygen Units:
-          <input
-            type="number"
-            name="availableOxygen"
-            value={formData.availableOxygen}
-            onChange={handleChange}
-            min="0"
-          />
-        </label>
+        <input
+          className="form-input"
+          type="number"
+          placeholder="Available Oxygen Units"
+          name="availableOxygen"
+          value={formData.availableOxygen}
+          onChange={handleChange}
+          min="0"
+        />
 
-        <label>
-          Available Ambulances:
-          <input
-            type="number"
-            name="ambulancesAvailable"
-            value={formData.ambulancesAvailable}
-            onChange={handleChange}
-            min="0"
-          />
-        </label>
+        <input
+          className="form-input"
+          type="number"
+          placeholder="Ambulances Available"
+          name="ambulancesAvailable"
+          value={formData.ambulancesAvailable}
+          onChange={handleChange}
+          min="0"
+        />
 
-        <div className="form-actions">
-          <button type="submit" className="btn">
+        {/* Action buttons */}
+        <div className="form-navigation">
+          <button type="submit" className="form-submit-btn">
             ✅ Save Changes
           </button>
           <button
             type="button"
-            className="btn cancel-btn"
+            className="form-view-button"
             onClick={() => navigate("/my-hospitals")}
           >
             🔙 Cancel
