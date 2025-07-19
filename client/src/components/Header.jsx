@@ -36,13 +36,15 @@ function Header() {
     logout();
     navigate("/");
   };
-  
+
   return (
     <header className="header">
-      <div className="header-logo">Curamap</div>
+      <Link to="/" className="header-logo">
+        Curamap
+      </Link>
 
       <nav className="nav-links">
-        <Link to="/">Home</Link>
+        <Link to="/user">View Hospitals</Link>
         <Link to="/admin">Add Hospital</Link>
         <Link to="/my-hospitals">My Entries</Link>
         <span onClick={handleLogout} className="logout-link">
