@@ -3,9 +3,6 @@ import { Routes, Route } from "react-router-dom";
 
 import Header from "./components/Header";
 import AddHospitalForm from "./components/AddHospitalForm";
-import HospitalDetails from "./components/HospitalDetails";
-import HospitalMap from "./components/HospitalMap";
-import "./index.css";
 import HospitalProfile from "./components/HospitalProfile";
 import LandingPage from "./components/LandingPage";
 import MyHospitals from "./components/MyHospitals";
