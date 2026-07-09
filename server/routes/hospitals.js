@@ -185,6 +185,8 @@ router.patch("/:id", authMiddleware, async (req, res) => {
       }
     });
 
+    hospital.lastUpdated = Date.now();
+
     const updated = await hospital.save();
     res.json(updated);
   } catch (err) {
@@ -224,6 +226,8 @@ router.put("/:id", authMiddleware, async (req, res) => {
         hospital[field] = req.body[field];
       }
     });
+
+    hospital.lastUpdated = Date.now();
 
     const updated = await hospital.save();
     res.json(updated);

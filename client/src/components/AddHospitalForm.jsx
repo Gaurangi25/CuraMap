@@ -12,7 +12,6 @@ function AddHospitalForm() {
     latitude: "",
     longitude: "",
     type: "",
-    verified: false,
 
     // Available details
     availableBeds: "",
@@ -112,7 +111,6 @@ function AddHospitalForm() {
           latitude: "",
           longitude: "",
           type: "",
-          verified: false,
           availableBeds: 0,
           availableOxygen: 0,
           ambulancesAvailable: 0,
@@ -213,17 +211,6 @@ function AddHospitalForm() {
           onChange={handleChange}
           min="0"
         />
-
-        {/* checkbox to select type */}
-        <label className="form-checkbox">
-          <input
-            type="checkbox"
-            name="verified"
-            checked={formData.verified}
-            onChange={handleChange}
-          />
-          Open Now
-        </label>
 
         {/* select options */}
         <select

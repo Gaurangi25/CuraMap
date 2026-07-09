@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("token"));
 
-  //const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   // Load saved login info from localStorage
   useEffect(() => {
@@ -37,9 +37,10 @@ export function AuthProvider({ children }) {
       } catch (err) {
         console.warn("⚠️ Invalid token in localStorage. Clearing...");
         localStorage.removeItem("token");
+        setToken(null);
       }
     }
-    //setLoading(false);
+    setLoading(false);
   }, []);
 
   // Save login info
@@ -60,7 +61,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
