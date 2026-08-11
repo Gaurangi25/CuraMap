@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import Header from "./components/Header";
 import AddHospitalForm from "./components/AddHospitalForm";
@@ -89,6 +90,7 @@ function App() {
           }
         />
       </Routes>
+      <SpeedInsights />
     </div>
   );
 }
