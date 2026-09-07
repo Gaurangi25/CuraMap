@@ -1,7 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
 import Hospital from "../models/Hospital.js";
-import { nearbyHospitals } from "../controllers/hospitalController.js";
+import {
+  nearbyHospitals,
+  searchHospitals,
+} from "../controllers/hospitalController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
 // a mini app just for hospitals
@@ -9,6 +12,7 @@ const router = express.Router();
 
 // =================== GET nearby hospitals ===================
 router.get("/nearby", nearbyHospitals);
+router.get("/search", searchHospitals);
 
 // =================== GET my hospitals (auth only) ===================
 router.get("/mine", authMiddleware, async (req, res) => {
