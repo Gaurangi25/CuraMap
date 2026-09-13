@@ -51,13 +51,35 @@ export const createHospitalAdminRequest = async (req, res) => {
       });
     }
 
-    // Check whether hospital already has an admin
+    // ==========================================
+    // CHECK EXISTING HOSPITAL OWNER
+    // ==========================================
+
     if (hospital.owner) {
-      return res.status(400).json({
-        error:
-          "This hospital already has a hospital admin",
+      const existingAdmin = await User.findOne({
+        _id: hospital.owner,
+        role: "hospital_admin",
+        hospitalId: hospital._id,
       });
+
+      // Only block if the owner is actually
+      // a valid hospital admin for this hospital.
+      if (existingAdmin) {
+        return res.status(400).json({
+          error:
+            "This hospital already has a hospital admin",
+        });
+      }
+
+      // Stale / invalid owner reference.
+      // Treat the hospital as unowned.
+      hospital.owner = null;
+      await hospital.save();
     }
+
+    // ==========================================
+    // CREATE REQUEST
+    // ==========================================
 
     const request = new HospitalAdminRequest({
       user: req.user._id,
@@ -151,35 +173,51 @@ export const approveHospitalAdminRequest = async (
       });
     }
 
-    // Hospital can have only one admin
+    // ==========================================
+    // CHECK EXISTING HOSPITAL OWNER
+    // ==========================================
+
     if (hospital.owner) {
-      return res.status(400).json({
-        error:
-          "This hospital already has a hospital admin",
+      const existingAdmin = await User.findOne({
+        _id: hospital.owner,
+        role: "hospital_admin",
+        hospitalId: hospital._id,
       });
+
+      // Block only if the owner is a valid
+      // hospital admin for this hospital.
+      if (existingAdmin) {
+        return res.status(400).json({
+          error:
+            "This hospital already has a hospital admin",
+        });
+      }
+
+      // Stale / invalid owner reference.
+      hospital.owner = null;
     }
 
-    // =====================================
+    // ==========================================
     // MAKE USER A HOSPITAL ADMIN
-    // =====================================
+    // ==========================================
 
     user.role = "hospital_admin";
     user.hospitalId = hospital._id;
 
     await user.save();
 
-    // =====================================
+    // ==========================================
     // LINK ADMIN TO HOSPITAL
-    // =====================================
+    // ==========================================
 
     hospital.owner = user._id;
     hospital.verified = true;
 
     await hospital.save();
 
-    // =====================================
+    // ==========================================
     // UPDATE REQUEST
-    // =====================================
+    // ==========================================
 
     request.status = "approved";
     request.reviewedBy = req.user._id;
