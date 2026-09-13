@@ -1,210 +1,527 @@
 import axios from "axios";
 
-export const getNearbyHospitalsFromOSM = async (
-  lat,
-  lng,
-  radius = 5000
-) => {
-  const query = `
-    [out:json][timeout:25];
-    (
-      node["amenity"="hospital"]["name"](around:${radius},${lat},${lng});
-      way["amenity"="hospital"]["name"](around:${radius},${lat},${lng});
-    );
-    out center;
-  `;
+import {
+  getNearbyHospitalsFromGovernmentDirectory,
+  searchHospitalsFromGovernmentDirectory,
+} from "./governmentHospitalService.js";
 
-  console.log("OSM REQUEST STARTED:", lat, lng, radius);
-  console.log("SENDING REQUEST TO OVERPASS");
+/*
+  Multiple Overpass servers are used so that CuraMap
+  does not depend on a single server.
+*/
+const OVERPASS_SERVERS = [
+  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.kumi.systems/api/interpreter",
+];
 
-  const response = await axios.get(
-    "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
-    {
-      params: {
-        data: query,
-      },
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "CuraMap/1.0 (hospital discovery app)",
-        Referer: "http://localhost:3000/",
-      },
+/*
+  Keep track of requests that are already running.
+*/
+const inFlightRequests = new Map();
+
+/*
+  Reusable Overpass request.
+*/
+const requestOverpass = async (query) => {
+  if (inFlightRequests.has(query)) {
+    console.log("Reusing existing Overpass request.");
+
+    return inFlightRequests.get(query);
+  }
+
+  const requestPromise = (async () => {
+    let lastError = null;
+
+    for (const server of OVERPASS_SERVERS) {
+      try {
+        console.log("Trying Overpass server:", server);
+
+        const response = await axios.get(server, {
+          params: {
+            data: query,
+          },
+          headers: {
+            Accept: "application/json",
+            "User-Agent":
+              "CuraMap/1.0 (hospital discovery app)",
+            Referer: "http://localhost:3000/",
+          },
+          timeout: 12000,
+        });
+
+        console.log(
+          "Overpass response received from:",
+          server,
+          "| Elements:",
+          response.data.elements?.length
+        );
+
+        return response;
+      } catch (error) {
+        lastError = error;
+
+        console.warn(
+          "Overpass server failed:",
+          server,
+          "|",
+          error.response?.status ||
+            error.code ||
+            error.message
+        );
+      }
     }
-  );
 
-  console.log(
-    "OVERPASS RESPONSE RECEIVED:",
-    response.data.elements?.length
-  );
+    throw (
+      lastError ||
+      new Error("All Overpass servers failed")
+    );
+  })();
 
-  // Convert OSM data into the format your existing frontend expects
-  const hospitals = response.data.elements.map((hospital) => {
-    const tags = hospital.tags || {};
+  inFlightRequests.set(query, requestPromise);
 
-    const latitude =
-      hospital.type === "node"
-        ? hospital.lat
-        : hospital.center?.lat;
-
-    const longitude =
-      hospital.type === "node"
-        ? hospital.lon
-        : hospital.center?.lon;
-
-    return {
-      _id: `osm-${hospital.type}-${hospital.id}`,
-      name: tags.name || "Unnamed Hospital",
-      address:
-        tags["addr:full"] ||
-        tags["addr:street"] ||
-        tags["addr:district"] ||
-        "Address unavailable",
-      phone: tags.phone || "",
-      latitude,
-      longitude,
-      type: tags.healthcare || "hospital",
-
-      // OSM does not provide these availability values
-      availableBeds: null,
-      availableOxygen: null,
-      ambulancesAvailable: null,
-
-      verified: false,
-      lastUpdated: null,
-
-      // Additional OSM information
-      source: "OpenStreetMap",
-      website: tags.website || "",
-      emergency: tags.emergency || "",
-      speciality: tags["healthcare:speciality"] || "",
-    };
-  });
-
-  return hospitals;
+  try {
+    return await requestPromise;
+  } finally {
+    inFlightRequests.delete(query);
+  }
 };
 
-export const searchHospitalsFromOSM = async (name) => {
-  /*
-    Escape special regex characters.
+/*
+  Convert OSM hospital into CuraMap hospital format.
+*/
+const mapOSMHospital = (hospital) => {
+  const tags = hospital.tags || {};
 
-    Example:
-    "Fortis Hospital (Noida)"
-    should not break the Overpass regex.
-  */
-  const escapedName = name
-    .trim()
-    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const latitude =
+    hospital.type === "node"
+      ? hospital.lat
+      : hospital.center?.lat;
 
-  /*
-    First search specifically for hospitals.
+  const longitude =
+    hospital.type === "node"
+      ? hospital.lon
+      : hospital.center?.lon;
 
-    This is much more relevant than searching every
-    OSM object with a matching name.
-  */
-  const hospitalQuery = `
-    [out:json][timeout:20];
-    (
-      nwr["amenity"="hospital"]["name"~"${escapedName}",i];
-      nwr["healthcare"="hospital"]["name"~"${escapedName}",i];
+  return {
+    _id: `osm-${hospital.type}-${hospital.id}`,
+
+    name:
+      tags.name ||
+      "Unnamed Hospital",
+
+    address:
+      tags["addr:full"] ||
+      tags["addr:street"] ||
+      tags["addr:district"] ||
+      "Address unavailable",
+
+    phone: tags.phone || "",
+
+    latitude,
+    longitude,
+
+    type:
+      tags.healthcare ||
+      "hospital",
+
+    availableBeds: null,
+    availableOxygen: null,
+    ambulancesAvailable: null,
+
+    verified: false,
+    lastUpdated: null,
+
+    source: "OpenStreetMap",
+
+    website:
+      tags.website || "",
+
+    emergency:
+      tags.emergency || "",
+
+    speciality:
+      tags["healthcare:speciality"] ||
+      "",
+  };
+};
+
+/*
+  Calculate distance between two coordinates.
+*/
+const haversineDistance = (
+  lat1,
+  lng1,
+  lat2,
+  lng2
+) => {
+  const R = 6371;
+
+  const dLat =
+    ((lat2 - lat1) * Math.PI) / 180;
+
+  const dLng =
+    ((lng2 - lng1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) ** 2;
+
+  return (
+    R *
+    2 *
+    Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1 - a)
+    )
+  );
+};
+
+/*
+  Sort hospitals by distance from user's location.
+*/
+const sortByDistance = (
+  hospitals,
+  userLat,
+  userLng
+) => {
+  if (
+    !Number.isFinite(userLat) ||
+    !Number.isFinite(userLng)
+  ) {
+    return hospitals;
+  }
+
+  return hospitals
+    .map((hospital) => {
+      const latitude = Number(
+        hospital.latitude
+      );
+
+      const longitude = Number(
+        hospital.longitude
+      );
+
+      const distance =
+        Number.isFinite(latitude) &&
+        Number.isFinite(longitude)
+          ? haversineDistance(
+              userLat,
+              userLng,
+              latitude,
+              longitude
+            )
+          : Infinity;
+
+      return {
+        ...hospital,
+        distance,
+      };
+    })
+    .sort(
+      (a, b) =>
+        a.distance - b.distance
     );
-    out center tags;
-  `;
+};
 
-  console.log("OSM SEARCH STARTED:", name);
-  console.log("SENDING SEARCH REQUEST TO OVERPASS");
+/*
+  Filter hospitals according to selected radius.
 
-  let response = await axios.get(
-    "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
-    {
-      params: {
-        data: hospitalQuery,
-      },
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "CuraMap/1.0 (hospital discovery app)",
-        Referer: "http://localhost:3000/",
-      },
+  radius is in metres.
+*/
+const filterByRadius = (
+  hospitals,
+  userLat,
+  userLng,
+  radius
+) => {
+  if (
+    !Number.isFinite(userLat) ||
+    !Number.isFinite(userLng) ||
+    !Number.isFinite(radius) ||
+    radius <= 0
+  ) {
+    return hospitals;
+  }
+
+  const radiusKm =
+    radius / 1000;
+
+  return hospitals.filter(
+    (hospital) => {
+      const latitude = Number(
+        hospital.latitude
+      );
+
+      const longitude = Number(
+        hospital.longitude
+      );
+
+      if (
+        !Number.isFinite(latitude) ||
+        !Number.isFinite(longitude)
+      ) {
+        return false;
+      }
+
+      const distance =
+        haversineDistance(
+          userLat,
+          userLng,
+          latitude,
+          longitude
+        );
+
+      return distance <= radiusKm;
     }
   );
+};
 
-  let elements = response.data.elements || [];
+/*
+  Get nearby hospitals.
+*/
+export const getNearbyHospitalsFromOSM =
+  async (
+    lat,
+    lng,
+    radius = 5000
+  ) => {
+    const query = `
+      [out:json][timeout:25];
+      (
+        node["amenity"="hospital"]["name"](around:${radius},${lat},${lng});
+        way["amenity"="hospital"]["name"](around:${radius},${lat},${lng});
+      );
+      out center;
+    `;
 
-  console.log(
-    "OVERPASS HOSPITAL SEARCH RESPONSE RECEIVED:",
-    elements.length
-  );
+    console.log(
+      "OSM REQUEST STARTED:",
+      lat,
+      lng,
+      radius
+    );
 
-  /*
-    Fallback:
+    console.log(
+      "SENDING REQUEST TO OVERPASS"
+    );
 
-    If the hospital-specific query returns nothing,
-    perform the original broader name search.
+    try {
+      const response =
+        await requestOverpass(
+          query
+        );
 
-    This keeps your existing search behaviour as a fallback.
-  */
-  if (elements.length === 0) {
-    console.log("Hospital-specific search returned 0. Trying fallback search...");
+      console.log(
+        "OVERPASS RESPONSE RECEIVED:",
+        response.data.elements?.length
+      );
 
-    const fallbackQuery = `
+      const hospitals =
+        (
+          response.data.elements ||
+          []
+        ).map(mapOSMHospital);
+
+      /*
+        Overpass itself is already asked for the
+        selected radius, so these are nearby results.
+      */
+      return hospitals;
+    } catch (error) {
+      console.warn(
+        "All Overpass servers failed for nearby hospitals."
+      );
+
+      console.warn(
+        "Using Government Hospital Directory fallback."
+      );
+
+      const governmentHospitals =
+        getNearbyHospitalsFromGovernmentDirectory(
+          lat,
+          lng,
+          radius
+        );
+
+      console.log(
+        "Government fallback hospitals:",
+        governmentHospitals.length
+      );
+
+      return governmentHospitals;
+    }
+  };
+
+/*
+  Search hospitals by name.
+
+  Search results are restricted to the selected
+  radius when user location is available.
+*/
+export const searchHospitalsFromOSM =
+  async (
+    name,
+    userLat = null,
+    userLng = null,
+    radius = 5000
+  ) => {
+    const escapedName = name
+      .trim()
+      .replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
+      );
+
+    const hospitalQuery = `
       [out:json][timeout:20];
-      nwr["name"~"${escapedName}",i];
+      (
+        nwr["amenity"="hospital"]["name"~"${escapedName}",i];
+        nwr["healthcare"="hospital"]["name"~"${escapedName}",i];
+      );
       out center tags;
     `;
 
-    response = await axios.get(
-      "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
-      {
-        params: {
-          data: fallbackQuery,
-        },
-        headers: {
-          Accept: "application/json",
-          "User-Agent": "CuraMap/1.0 (hospital discovery app)",
-          Referer: "http://localhost:3000/",
-        },
-      }
+    console.log(
+      "OSM SEARCH STARTED:",
+      name
     );
-
-    elements = response.data.elements || [];
 
     console.log(
-      "OVERPASS FALLBACK SEARCH RESPONSE RECEIVED:",
-      elements.length
+      "SEARCH LOCATION:",
+      userLat,
+      userLng
     );
-  }
 
-  return elements.map((hospital) => {
-    const tags = hospital.tags || {};
+    console.log(
+      "SEARCH RADIUS:",
+      radius,
+      "metres"
+    );
 
-    return {
-      _id: `osm-${hospital.type}-${hospital.id}`,
-      name: tags.name || "Unnamed Hospital",
-      address:
-        tags["addr:full"] ||
-        tags["addr:street"] ||
-        tags["addr:district"] ||
-        "Address unavailable",
-      phone: tags.phone || "",
-      latitude:
-        hospital.type === "node"
-          ? hospital.lat
-          : hospital.center?.lat,
-      longitude:
-        hospital.type === "node"
-          ? hospital.lon
-          : hospital.center?.lon,
-      type: tags.healthcare || "hospital",
+    console.log(
+      "SENDING REQUEST TO OVERPASS"
+    );
 
-      availableBeds: null,
-      availableOxygen: null,
-      ambulancesAvailable: null,
+    try {
+      let response =
+        await requestOverpass(
+          hospitalQuery
+        );
 
-      verified: false,
-      lastUpdated: null,
+      let elements =
+        response.data.elements || [];
 
-      source: "OpenStreetMap",
-      website: tags.website || "",
-      emergency: tags.emergency || "",
-      speciality: tags["healthcare:speciality"] || "",
-    };
-  });
-};
+      console.log(
+        "OVERPASS HOSPITAL SEARCH RESPONSE RECEIVED:",
+        elements.length
+      );
+
+      /*
+        If the hospital-specific search finds nothing,
+        try a broader name search.
+      */
+      if (elements.length === 0) {
+        console.log(
+          "Hospital-specific search returned 0. Trying fallback search..."
+        );
+
+        const fallbackQuery = `
+          [out:json][timeout:20];
+          nwr["name"~"${escapedName}",i];
+          out center tags;
+        `;
+
+        response =
+          await requestOverpass(
+            fallbackQuery
+          );
+
+        elements =
+          response.data.elements || [];
+
+        console.log(
+          "OVERPASS FALLBACK SEARCH RESPONSE RECEIVED:",
+          elements.length
+        );
+      }
+
+      let hospitals =
+        elements.map(
+          mapOSMHospital
+        );
+
+      /*
+        IMPORTANT:
+        Search now obeys the selected radius.
+      */
+      hospitals =
+        filterByRadius(
+          hospitals,
+          userLat,
+          userLng,
+          radius
+        );
+
+      /*
+        Nearest matching hospital first.
+      */
+      hospitals =
+        sortByDistance(
+          hospitals,
+          userLat,
+          userLng
+        );
+
+      console.log(
+        "Hospitals after radius filtering:",
+        hospitals.length
+      );
+
+      return hospitals;
+    } catch (error) {
+      console.warn(
+        "All Overpass servers failed for hospital search."
+      );
+
+      console.warn(
+        "Using Government Hospital Directory search fallback."
+      );
+
+      const governmentResults =
+        await searchHospitalsFromGovernmentDirectory(
+          name,
+          userLat,
+          userLng,
+          radius
+        );
+
+      /*
+        Government service also receives radius,
+        but filter again here as a safety check.
+      */
+      const filteredResults =
+        filterByRadius(
+          governmentResults,
+          userLat,
+          userLng,
+          radius
+        );
+
+      const sortedResults =
+        sortByDistance(
+          filteredResults,
+          userLat,
+          userLng
+        );
+
+      console.log(
+        "Government search fallback results after radius filtering:",
+        sortedResults.length
+      );
+
+      return sortedResults;
+    }
+  };

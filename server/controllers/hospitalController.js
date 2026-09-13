@@ -4,14 +4,16 @@ import {
   searchHospitalsFromOSM,
 } from "../services/osmService.js";
 import { findGovernmentHospital } from "../services/governmentHospitalService.js";
+
 /*
   GET /api/hospitals/nearby
  -------------------------
- Returns hospitals within a given radius (default = 5 km)
+ Returns hospitals within a given radius (default = 5 km)
+
  Query params:
-   lat  – required – user’s latitude
-   lng  – required – user’s longitude
-   r    – optional – radius in metres (defaults to 5000 m)
+   lat  – required – user's latitude
+   lng  – required – user's longitude
+   r    – optional – radius in metres (defaults to 5000 m)
 
  Example:
    /api/hospitals/nearby?lat=28.6&lng=77.2&r=8000
@@ -21,9 +23,11 @@ import { findGovernmentHospital } from "../services/governmentHospitalService.js
 export const nearbyHospitals = async (req, res) => {
   const { lat, lng, r = 5000 } = req.query;
 
-  // latitude and longitudes are necessary
+  // latitude and longitude are necessary
   if (!lat || !lng) {
-    return res.status(400).json({ msg: "Latitude and Longitude required" });
+    return res.status(400).json({
+      msg: "Latitude and Longitude required",
+    });
   }
 
   try {
@@ -53,59 +57,105 @@ export const nearbyHospitals = async (req, res) => {
         source: "OpenStreetMap + Government Directory",
 
         phone:
-          governmentHospital.Telephone ||
-          governmentHospital.Mobile_Number ||
+          governmentHospital.phone ||
           hospital.phone,
 
         website:
-          governmentHospital.Website !== "0"
-            ? governmentHospital.Website
-            : hospital.website,
+          governmentHospital.website ||
+          hospital.website,
 
         speciality:
-          governmentHospital.Specialties !== "0"
-            ? governmentHospital.Specialties
-            : hospital.speciality,
+          governmentHospital.speciality ||
+          hospital.speciality,
 
         totalBeds:
-          governmentHospital.Total_Num_Beds !== "0"
-            ? Number(governmentHospital.Total_Num_Beds)
-            : null,
+          governmentHospital.totalBeds ?? null,
 
         emergencyServices:
-          governmentHospital.Emergency_Services !== "0"
-            ? governmentHospital.Emergency_Services
-            : null,
+          governmentHospital.emergencyServices ||
+          null,
 
         ambulancePhone:
-          governmentHospital.Ambulance_Phone_No !== "0"
-            ? governmentHospital.Ambulance_Phone_No
-            : null,
+          governmentHospital.ambulancePhone ||
+          null,
 
-        governmentSource: "National Hospital Directory",
-        governmentDataUpdated: "2026-08-11",
+        governmentSource:
+          "National Hospital Directory",
+
+        governmentDataUpdated:
+          governmentHospital.governmentDataUpdated ||
+          "2026-08-11",
       };
     });
 
     return res.status(200).json(enrichedHospitals);
   } catch (err) {
-    console.error("Error fetching nearby hospitals:", err.message);
-    return res.status(500).json({ msg: "Something went wrong", error: err });
+    console.error(
+      "Error fetching nearby hospitals:",
+      err.message
+    );
+
+    return res.status(500).json({
+      msg: "Something went wrong",
+      error: err,
+    });
   }
 };
 
+
+// Search hospital by name
 export const searchHospitals = async (req, res) => {
-  const { name } = req.query;
+  const {
+    name,
+    lat,
+    lng,
+    r = 5000,
+  } = req.query;
 
   if (!name) {
-    return res.status(400).json({ msg: "Hospital name required" });
+    return res.status(400).json({
+      msg: "Hospital name required",
+    });
   }
 
   try {
-    const hospitals = await searchHospitalsFromOSM(name);
-    return res.status(200).json(hospitals);
+    const latitude = Number(lat);
+    const longitude = Number(lng);
+    const radius = Number(r);
+
+    const hasUserLocation =
+      Number.isFinite(latitude) &&
+      Number.isFinite(longitude);
+
+    const validRadius =
+      Number.isFinite(radius) &&
+      radius > 0
+        ? radius
+        : 5000;
+
+    const hospitals =
+      await searchHospitalsFromOSM(
+        name,
+        hasUserLocation
+          ? latitude
+          : null,
+        hasUserLocation
+          ? longitude
+          : null,
+        validRadius
+      );
+
+    return res.status(200).json(
+      hospitals
+    );
   } catch (err) {
-    console.error("Error searching hospitals:", err.message);
-    return res.status(500).json({ msg: "Something went wrong" });
+    console.error(
+      "Error searching hospitals:",
+      err.message
+    );
+
+    return res.status(500).json({
+      msg: "Something went wrong",
+    });
   }
 };
