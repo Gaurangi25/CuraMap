@@ -14,7 +14,7 @@ const router = express.Router();
    GOOGLE AUTH ROUTES (Passport.js)
 --------------------------------------*/
 
-//Redirect user to Google
+// Redirect user to Google
 router.get(
   "/google",
   passport.authenticate("google", {
@@ -37,24 +37,39 @@ router.get(
         id: req.user._id,
         email: req.user.email,
         name: req.user.name,
+        role: req.user.role,
+        hospitalId: req.user.hospitalId,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
     // redirect to React with token as URL param
-    const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
-    console.log("Google login success. req.user = ", req.user);
-    console.log("Redirecting to:", `${CLIENT_URL}/oauth?token=${token}`);
+    const CLIENT_URL =
+      process.env.CLIENT_URL || "http://localhost:3000";
 
-    return res.redirect(`${CLIENT_URL}/oauth?token=${token}`);
+    console.log(
+      "Google login success. req.user = ",
+      req.user
+    );
+
+    console.log(
+      "Redirecting to:",
+      `${CLIENT_URL}/oauth?token=${token}`
+    );
+
+    return res.redirect(
+      `${CLIENT_URL}/oauth?token=${token}`
+    );
   }
 );
 
 // Logout route to destroy session
 router.get("/logout", (req, res) => {
   req.logout(() => {
-    res.redirect(process.env.CLIENT_URL || "http://localhost:3000");
+    res.redirect(
+      process.env.CLIENT_URL || "http://localhost:3000"
+    );
   });
 });
 
@@ -62,74 +77,98 @@ router.get("/logout", (req, res) => {
    LOCAL SIGNUP & LOGIN ROUTES
 --------------------------------------*/
 
-// simple check PING route
+// Simple check PING route
 router.get("/ping", (req, res) => {
-  console.log("Auth ping testing");
+  console.log("Auth route is working");
   res.send("Auth route is working");
 });
 
-//SIGNUP route
+// SIGNUP route
 router.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    // check if user already exist
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
-      return res.status(400).json({ error: "User Already Exists.Log in..." });
+      return res.status(400).json({
+        error: "User Already Exists. Log in...",
+      });
     }
 
-    // Hash Password creation using bcrypt
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
-    const newUser = new User({ name, email, password: hashedPassword });
+    // Create normal user
+    // IMPORTANT:
+    // Role is NOT taken from req.body.
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role: "user",
+      hospitalId: null,
+    });
+
     await newUser.save();
 
-    //Generate JWT Token
+    // Generate JWT Token
     const token = jwt.sign(
       {
         id: newUser._id,
         email: newUser.email,
         name: newUser.name,
+        role: newUser.role,
+        hospitalId: newUser.hospitalId,
       },
-
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    //console.log("Local signup success. JWT payload:");
-    /*console.log({
-      id: newUser._id,
-      email: newUser.email,
-      name: newUser.name,
-    });*/
-
     res.status(201).json({
       token,
-      user: { name: newUser.name, email: newUser.email, _id: newUser._id },
+      user: {
+        name: newUser.name,
+        email: newUser.email,
+        _id: newUser._id,
+        role: newUser.role,
+        hospitalId: newUser.hospitalId,
+      },
     });
   } catch (err) {
     console.log("Signup error : ", err);
-    res.status(500).json({ error: "Server error during signup" });
+
+    res.status(500).json({
+      error: "Server error during signup",
+    });
   }
 });
 
-//LOGIN route
+// LOGIN route
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
     // Find user
     const user = await User.findOne({ email });
+
     if (!user) {
-      return res.status(400).json({ error: "User does not exist" });
+      return res.status(400).json({
+        error: "User does not exist",
+      });
     }
 
-    // Compare Passwords
-    const isMatch = await bcrypt.compare(password, user.password);
+    // Compare passwords
+    const isMatch = await bcrypt.compare(
+      password,
+      user.password
+    );
+
     if (!isMatch) {
-      return res.status(401).json({ error: "Invalid Credentials" });
+      return res.status(401).json({
+        error: "Invalid Credentials",
+      });
     }
 
     // JWT Token
@@ -138,6 +177,8 @@ router.post("/login", async (req, res) => {
         id: user._id,
         email: user.email,
         name: user.name,
+        role: user.role,
+        hospitalId: user.hospitalId,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
@@ -145,11 +186,20 @@ router.post("/login", async (req, res) => {
 
     res.json({
       token,
-      user: { _id: user._id, name: user.name, email: user.email },
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        hospitalId: user.hospitalId,
+      },
     });
   } catch (err) {
     console.log("Login error: ", err);
-    res.status(500).json({ error: "Server error during login" });
+
+    res.status(500).json({
+      error: "Server error during login",
+    });
   }
 });
 

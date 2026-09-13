@@ -6,6 +6,7 @@ import {
   searchHospitals,
 } from "../controllers/hospitalController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
+import hospitalAdminMiddleware from "../middleware/hospitalAdminMiddleware.js";
 
 // a mini app just for hospitals
 const router = express.Router();
@@ -14,28 +15,44 @@ const router = express.Router();
 router.get("/nearby", nearbyHospitals);
 router.get("/search", searchHospitals);
 
-// =================== GET my hospitals (auth only) ===================
-router.get("/mine", authMiddleware, async (req, res) => {
-  try {
-    const hospitals = await Hospital.find({ owner: req.user.id });
-    res.json(hospitals);
-  } catch (err) {
-    console.error("GET /api/hospitals/mine error:", err.message);
-    res.status(500).json({ error: "Server error" });
+// =================== GET my hospital ===================
+router.get(
+  "/mine",
+  authMiddleware,
+  hospitalAdminMiddleware,
+  async (req, res) => {
+    try {
+      const hospital = await Hospital.findById(req.user.hospitalId);
+
+      if (!hospital) {
+        return res.status(404).json({
+          error: "Hospital not found",
+        });
+      }
+
+      res.json(hospital);
+    } catch (err) {
+      console.error("GET /api/hospitals/mine error:", err.message);
+      res.status(500).json({
+        error: "Server error",
+      });
+    }
   }
-});
+);
 
 // =================== GET all hospitals ======================
 router.get("/", async (req, res) => {
-  //   console.log("GET /api/hospitals is working");
-  //   res.send("Hospital GET route is working");
-
   try {
-    const hospitals = await Hospital.find().sort({ lastUpdated: -1 });
+    const hospitals = await Hospital.find().sort({
+      "availability.lastUpdated": -1,
+    });
+
     res.json(hospitals);
   } catch (err) {
     console.error("GET /api/hospitals error:", err.message);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({
+      error: "Server error",
+    });
   }
 });
 
@@ -43,76 +60,19 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const hospital = await Hospital.findById(req.params.id);
+
     if (!hospital) {
-      return res.status(404).json({ error: "Hospital not found" });
-    }
-    res.json(hospital);
-  } catch (err) {
-    console.log("Error in GET /:id", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// =================== POST a new hospital ====================
-router.post("/", authMiddleware, async (req, res) => {
-  //   console.log("POST /api/hospitals");
-  //   console.log(req.body);
-  //   res.send("Hospital POST route working");
-
-  try {
-    const {
-      name,
-      address,
-      phone,
-      latitude,
-      longitude,
-      type,
-      verified,
-      availableBeds,
-      availableOxygen,
-      ambulancesAvailable,
-    } = req.body;
-
-    //Validating required fields
-    if (!name || !latitude || !longitude) {
-      return res.status(400).json({
-        error: "Missing required fields: name,latitude, or longitude",
+      return res.status(404).json({
+        error: "Hospital not found",
       });
     }
 
-    // geolocation
-    const location = {
-      type: "Point",
-      coordinates: [parseFloat(longitude), parseFloat(latitude)],
-    };
-
-    // ✅ Time-based openNow (9 AM - 6 PM)
-    const now = new Date();
-    const hour = now.getHours();
-    const openNow = hour >= 9 && hour < 18;
-
-    //Creating new Hospital
-    const newHospital = new Hospital({
-      name,
-      address,
-      phone,
-      latitude: parseFloat(latitude),
-      longitude: parseFloat(longitude),
-      type,
-      verified: Boolean(verified),
-      availableBeds: parseInt(availableBeds) || 0,
-      availableOxygen: parseInt(availableOxygen) || 0,
-      ambulancesAvailable: parseInt(ambulancesAvailable) || 0,
-      openNow,
-      location,
-      owner: req.user.id,
-    });
-
-    const saved = await newHospital.save();
-    res.status(201).json(saved);
+    res.json(hospital);
   } catch (err) {
-    console.error("POST /api/hospitals error:", err.message);
-    res.status(400).json({ error: "Invalid hospital data" });
+    console.log("Error in GET /:id", err);
+    res.status(500).json({
+      error: "Server error",
+    });
   }
 });
 
@@ -121,124 +81,287 @@ router.patch("/:id/report", async (req, res) => {
   try {
     const hospital = await Hospital.findByIdAndUpdate(
       req.params.id,
-      { $inc: { reportCount: 1 } },
-      { new: true }
+      {
+        $inc: {
+          reportCount: 1,
+        },
+      },
+      {
+        new: true,
+      }
     );
 
     if (!hospital) {
-      return res.status(404).json({ error: "Hospital not found" });
+      return res.status(404).json({
+        error: "Hospital not found",
+      });
     }
 
     res.json(hospital);
   } catch (err) {
     console.log("Error in PATCH /:id/report", err);
-    res.status(500).json({ error: "Server error" });
+
+    res.status(500).json({
+      error: "Server error",
+    });
   }
 });
+
+// ============================================================
+// HOSPITAL ADMIN ROUTES
+// ============================================================
+
+// =================== UPDATE HOSPITAL AVAILABILITY ===================
+
+router.patch(
+  "/:id/availability",
+  authMiddleware,
+  hospitalAdminMiddleware,
+  async (req, res) => {
+    try {
+      const hospital = await Hospital.findById(req.params.id);
+
+      if (!hospital) {
+        return res.status(404).json({
+          error: "Hospital not found",
+        });
+      }
+
+      // Admin can ONLY update their own hospital
+      if (
+        hospital._id.toString() !==
+        req.user.hospitalId.toString()
+      ) {
+        return res.status(403).json({
+          error: "You can only update your assigned hospital",
+        });
+      }
+
+      const {
+        availableBeds,
+        icuBeds,
+        oxygenUnits,
+        ventilators,
+        ambulances,
+        emergencyStatus,
+      } = req.body;
+
+      // Update only provided values
+      if (availableBeds !== undefined) {
+        hospital.availability.availableBeds =
+          Number(availableBeds);
+      }
+
+      if (icuBeds !== undefined) {
+        hospital.availability.icuBeds =
+          Number(icuBeds);
+      }
+
+      if (oxygenUnits !== undefined) {
+        hospital.availability.oxygenUnits =
+          Number(oxygenUnits);
+      }
+
+      if (ventilators !== undefined) {
+        hospital.availability.ventilators =
+          Number(ventilators);
+      }
+
+      if (ambulances !== undefined) {
+        hospital.availability.ambulances =
+          Number(ambulances);
+      }
+
+      if (emergencyStatus !== undefined) {
+        hospital.availability.emergencyStatus =
+          emergencyStatus;
+      }
+
+      // Record who updated the availability
+      hospital.availability.updatedBy = req.user._id;
+
+      // Record when the availability was updated
+      hospital.availability.lastUpdated = new Date();
+
+      const updatedHospital = await hospital.save();
+
+      res.json({
+        message: "Hospital availability updated successfully",
+        hospital: updatedHospital,
+      });
+    } catch (err) {
+      console.error(
+        "PATCH /api/hospitals/:id/availability error:",
+        err.message
+      );
+
+      res.status(500).json({
+        error: "Server error",
+      });
+    }
+  }
+);
 
 // =================== DELETE hospital by ID ===================
-router.delete("/:id", authMiddleware, async (req, res) => {
-  try {
-    const hospital = await Hospital.findById(req.params.id);
 
-    if (!hospital) {
-      return res.status(404).json({ error: "Hospital not found" });
-    }
+router.delete(
+  "/:id",
+  authMiddleware,
+  hospitalAdminMiddleware,
+  async (req, res) => {
+    try {
+      const hospital = await Hospital.findById(req.params.id);
 
-    if (hospital.owner.toString() !== req.user.id) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
-
-    await hospital.deleteOne();
-    res.json({ message: "Hospital deleted successfully" });
-  } catch (err) {
-    console.error("DELETE /api/hospitals/:id error:", err.message);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// =================== PATCH update hospital by ID ===================
-router.patch("/:id", authMiddleware, async (req, res) => {
-  try {
-    const hospital = await Hospital.findById(req.params.id);
-
-    if (!hospital) {
-      return res.status(404).json({ error: "Hospital not found" });
-    }
-
-    if (hospital.owner.toString() !== req.user.id) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
-
-    const allowedFields = [
-      "name",
-      "address",
-      "phone",
-      "latitude",
-      "longitude",
-      "type",
-      "verified",
-      "availableBeds",
-      "availableOxygen",
-      "ambulancesAvailable",
-    ];
-
-    allowedFields.forEach((field) => {
-      if (req.body[field] !== undefined) {
-        hospital[field] = req.body[field];
+      if (!hospital) {
+        return res.status(404).json({
+          error: "Hospital not found",
+        });
       }
-    });
 
-    hospital.lastUpdated = Date.now();
-
-    const updated = await hospital.save();
-    res.json(updated);
-  } catch (err) {
-    console.error("PATCH /api/hospitals/:id error:", err.message);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// =================== PUT update hospital by ID ===================
-router.put("/:id", authMiddleware, async (req, res) => {
-  try {
-    const hospital = await Hospital.findById(req.params.id);
-
-    if (!hospital) {
-      return res.status(404).json({ error: "Hospital not found" });
-    }
-
-    if (hospital.owner.toString() !== req.user.id) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
-
-    const allowedFields = [
-      "name",
-      "address",
-      "phone",
-      "latitude",
-      "longitude",
-      "type",
-      "verified",
-      "availableBeds",
-      "availableOxygen",
-      "ambulancesAvailable",
-    ];
-
-    allowedFields.forEach((field) => {
-      if (req.body[field] !== undefined) {
-        hospital[field] = req.body[field];
+      if (
+        hospital._id.toString() !==
+        req.user.hospitalId.toString()
+      ) {
+        return res.status(403).json({
+          error: "Unauthorized",
+        });
       }
-    });
 
-    hospital.lastUpdated = Date.now();
+      await hospital.deleteOne();
 
-    const updated = await hospital.save();
-    res.json(updated);
-  } catch (err) {
-    console.error("PUT /api/hospitals/:id error:", err.message);
-    res.status(500).json({ error: "Server error" });
+      res.json({
+        message: "Hospital deleted successfully",
+      });
+    } catch (err) {
+      console.error(
+        "DELETE /api/hospitals/:id error:",
+        err.message
+      );
+
+      res.status(500).json({
+        error: "Server error",
+      });
+    }
   }
-});
+);
+
+// =================== PATCH hospital profile ===================
+
+router.patch(
+  "/:id",
+  authMiddleware,
+  hospitalAdminMiddleware,
+  async (req, res) => {
+    try {
+      const hospital = await Hospital.findById(req.params.id);
+
+      if (!hospital) {
+        return res.status(404).json({
+          error: "Hospital not found",
+        });
+      }
+
+      // Admin can ONLY update their assigned hospital
+      if (
+        hospital._id.toString() !==
+        req.user.hospitalId.toString()
+      ) {
+        return res.status(403).json({
+          error: "Unauthorized",
+        });
+      }
+
+      // Static/profile fields only
+      const allowedFields = [
+        "name",
+        "address",
+        "phone",
+        "website",
+        "type",
+        "specialities",
+        "facilities",
+        "totalBeds",
+      ];
+
+      allowedFields.forEach((field) => {
+        if (req.body[field] !== undefined) {
+          hospital[field] = req.body[field];
+        }
+      });
+
+      const updated = await hospital.save();
+
+      res.json(updated);
+    } catch (err) {
+      console.error(
+        "PATCH /api/hospitals/:id error:",
+        err.message
+      );
+
+      res.status(500).json({
+        error: "Server error",
+      });
+    }
+  }
+);
+
+// =================== PUT hospital profile ===================
+
+router.put(
+  "/:id",
+  authMiddleware,
+  hospitalAdminMiddleware,
+  async (req, res) => {
+    try {
+      const hospital = await Hospital.findById(req.params.id);
+
+      if (!hospital) {
+        return res.status(404).json({
+          error: "Hospital not found",
+        });
+      }
+
+      // Admin can ONLY update their assigned hospital
+      if (
+        hospital._id.toString() !==
+        req.user.hospitalId.toString()
+      ) {
+        return res.status(403).json({
+          error: "Unauthorized",
+        });
+      }
+
+      const allowedFields = [
+        "name",
+        "address",
+        "phone",
+        "website",
+        "type",
+        "specialities",
+        "facilities",
+        "totalBeds",
+      ];
+
+      allowedFields.forEach((field) => {
+        if (req.body[field] !== undefined) {
+          hospital[field] = req.body[field];
+        }
+      });
+
+      const updated = await hospital.save();
+
+      res.json(updated);
+    } catch (err) {
+      console.error(
+        "PUT /api/hospitals/:id error:",
+        err.message
+      );
+
+      res.status(500).json({
+        error: "Server error",
+      });
+    }
+  }
+);
 
 export default router;

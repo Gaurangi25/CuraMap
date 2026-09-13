@@ -10,6 +10,8 @@ import passport from "./config/passport.js";
 import hospitalRoutes from "./routes/hospitals.js";
 import authRoutes from "./routes/auth.js";
 
+import hospitalAdminRoutes from "./routes/hospitalAdmin.js";
+
 dotenv.config();
 
 //console.log("JWT SECRET : ",process.env.JWT_SECRET);
@@ -21,12 +23,15 @@ app.use(
   cors({
     origin: ["http://localhost:3000", "https://cura-map.vercel.app"],
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 
 // to get nearby hospitals
 app.use("/api/hospitals", hospitalRoutes);
+
+// Hospital Admin routes
+app.use("/api/hospital-admin", hospitalAdminRoutes);
 
 app.get("/", (req, res) => {
   res.send("CuraMap is running");
@@ -44,7 +49,7 @@ app.use(
       mongoUrl: process.env.MONGO_URI,
       collectionName: "sessions",
     }),
-  })
+  }),
 );
 
 app.use(passport.initialize());

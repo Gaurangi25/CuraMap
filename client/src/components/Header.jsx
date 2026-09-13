@@ -1,73 +1,125 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import "./Header.css";
 
 function Header() {
-  const [darkMode, setDarkMode] = useState(false);
-  const { logout, user } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      setDarkMode(true);
-      document.body.classList.add("dark-mode");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    setDarkMode((prev) => {
-      const newMode = !prev;
-      document.body.classList.toggle("dark-mode", newMode);
-      localStorage.setItem("theme", newMode ? "dark" : "light");
-      return newMode;
-    });
-  };
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    if (!user) {
-      alert("You're already logged out.");
-      return;
-    }
-
-    console.log("Logout is called");
-    alert("Logout Successful!");
     logout();
-    navigate("/");
+    window.location.href = "/login";
   };
 
   return (
-    <header className="header">
-      <Link to="/" className="header-logo">
-        Curamap
-      </Link>
+    <header
+      style={{
+        backgroundColor: "#5b18a6",
+        padding: "18px 20px",
+        textAlign: "center",
+        color: "white",
+      }}
+    >
+      <h1
+        style={{
+          margin: "0 0 22px",
+          fontSize: "36px",
+          fontWeight: "800",
+          letterSpacing: "1px",
+        }}
+      >
+        CURAMAP
+      </h1>
 
-      <nav className="nav-links">
-        <Link to="/">Home</Link>
-        <Link to="/admin">Add Hospital</Link>
-        <Link to="/my-hospitals">My Entries</Link>
-        <span onClick={handleLogout} className="logout-link">
-          Logout
-        </span>
+      <nav
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "18px",
+        }}
+      >
+        <Link to="/" style={linkStyle}>
+          Home
+        </Link>
+
+        {/* Normal User */}
+        {user?.role === "user" && (
+          <>
+            <Link to="/dashboard" style={linkStyle}>
+              Dashboard
+            </Link>
+
+            <Link to="/hospital-admin-request" style={linkStyle}>
+              Become Hospital Admin
+            </Link>
+          </>
+        )}
+
+        {/* Hospital Admin */}
+        {user?.role === "hospital_admin" && (
+          <>
+            <Link to="/hospital-admin" style={linkStyle}>
+              Admin Dashboard
+            </Link>
+
+            <Link to="/my-hospitals" style={linkStyle}>
+              My Hospital
+            </Link>
+          </>
+        )}
+
+        {/* Super Admin */}
+        {user?.role === "super_admin" && (
+          <Link to="/super-admin" style={linkStyle}>
+            Super Admin Dashboard
+          </Link>
+        )}
+
+        {user && (
+          <button
+            onClick={handleLogout}
+            style={{
+              ...linkStyle,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            Logout
+          </button>
+        )}
       </nav>
 
-      {/* <div className="toggle-button-wrapper">
-        <button onClick={toggleTheme} className="theme-toggle-btn">
-          {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-        </button>
-      </div> */}
-
       <div
-        className={`toggle-button-wrapper ${darkMode ? "active" : ""}`}
-        onClick={toggleTheme}
+        style={{
+          width: "110px",
+          height: "46px",
+          background: "white",
+          borderRadius: "25px",
+          margin: "25px auto 0",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+        }}
       >
-        <div className="theme-toggle-btn">
-          <div className="toggle-pill"></div>
-        </div>
+        <div
+          style={{
+            width: "40px",
+            height: "40px",
+            background: "#ddd",
+            borderRadius: "50%",
+            margin: "3px",
+          }}
+        />
       </div>
     </header>
   );
 }
+
+const linkStyle = {
+  color: "white",
+  textDecoration: "none",
+  fontSize: "21px",
+  fontWeight: "700",
+};
 
 export default Header;

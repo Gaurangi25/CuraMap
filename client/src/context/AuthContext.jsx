@@ -12,7 +12,9 @@ export function useAuth() {
 // Provider component
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const [token, setToken] = useState(() =>
+    localStorage.getItem("token")
+  );
 
   const [loading, setLoading] = useState(true);
 
@@ -28,28 +30,37 @@ export function AuthProvider({ children }) {
           _id: decoded.id,
           email: decoded.email,
           name: decoded.name,
+
+          // NEW
+          role: decoded.role || "user",
+          hospitalId: decoded.hospitalId || null,
         };
 
         setToken(savedToken);
         setUser(userFromToken);
 
-        //console.log("Auth restored from token:", userFromToken);
+        // console.log("Auth restored from token:", userFromToken);
       } catch (err) {
         console.warn("⚠️ Invalid token in localStorage. Clearing...");
         localStorage.removeItem("token");
         setToken(null);
+        setUser(null);
       }
     }
+
     setLoading(false);
   }, []);
 
   // Save login info
   function login(newToken, newUser) {
-    //console.log("Saving token to context/localStorage:", newToken);
-    //console.log("Saving user to context", newUser);
-
     setToken(newToken);
-    setUser(newUser);
+
+    setUser({
+      ...newUser,
+      role: newUser.role || "user",
+      hospitalId: newUser.hospitalId || null,
+    });
+
     localStorage.setItem("token", newToken);
   }
 
@@ -61,25 +72,16 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
-
-/*
-
-AuthContext.jsx — What It Does:
-This file creates a global authentication system using React Context.
-It helps the whole app know:
-
-Who is logged in
-What their token is
-How to log in / log out
-
-🔧 Core Functions Inside:
-login(token, user): saves user + token to state and localStorage
-logout(): clears user and token from state and storage
-useAuth(): lets any component easily access auth data
-
-*/

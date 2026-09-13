@@ -30,7 +30,8 @@ function Login() {
       );
 
       const { token, user } = res.data;
-
+      console.log("LOGIN USER:", user);
+      
       //login(token, user) → Save token + user info to context and localStorage
       login(token, user);
       navigate("/dashboard");

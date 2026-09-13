@@ -2,28 +2,43 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-/* 
-In react <PrivateRoute>
-            <Dashboard />
-         </PrivateRoute>
+/*
+  Examples:
 
-         <Dashboard /> is the children
+  <PrivateRoute>
+    <Dashboard />
+  </PrivateRoute>
+
+  <PrivateRoute allowedRoles={["hospital_admin"]}>
+    <HospitalAdminDashboard />
+  </PrivateRoute>
+
+  <PrivateRoute allowedRoles={["super_admin"]}>
+    <SuperAdminDashboard />
+  </PrivateRoute>
 */
 
-function PrivateRoute({ children }) {
-  const { token, loading } = useAuth(); //this gives the store JWT in token
+function PrivateRoute({ children, allowedRoles }) {
+  const { token, user, loading } = useAuth();
 
-  // Don't render anything if token check hasn't completed yet
+  // Don't render anything while authentication is being checked
   if (loading) {
-    return <p>Checking authentication...</p>; // or a loader
+    return <p>Checking authentication...</p>;
   }
 
-  if (!token) {
+  // User is not logged in
+  if (!token || !user) {
     return <Navigate to="/login" replace />;
-    // replace means user goes to the login page...and this page is not saved in the history
   }
 
-  // shows dashboard page on logging in
+  // If specific roles are required, check the user's role
+  if (
+    allowedRoles &&
+    !allowedRoles.includes(user.role)
+  ) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return children;
 }
 

@@ -19,9 +19,9 @@ function MyHospitals() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
-        setHospitals(res.data);
+        setHospitals(Array.isArray(res.data) ? res.data : [res.data]);
       } catch (err) {
         console.error("Error fetching hospitals:", err);
       }
@@ -33,7 +33,7 @@ function MyHospitals() {
   // DELETE A HOSPITAL BY ID
   async function handleDelete(id) {
     const confirm = window.confirm(
-      "Are you sure you want to delete this hospital?"
+      "Are you sure you want to delete this hospital?",
     );
     if (!confirm) return;
 
@@ -44,7 +44,7 @@ function MyHospitals() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       setHospitals((prev) => prev.filter((h) => h._id !== id));
       alert("Hospital deleted successfully.");
@@ -88,13 +88,18 @@ function MyHospitals() {
             <p className="hospital-info">Type: {hospital.type}</p>
             <p className="hospital-info">Address: {hospital.address}</p>
             <p className="hospital-info">
-              Available Beds: {hospital.availableBeds}
+              Available Beds:{" "}
+              {hospital.availability?.availableBeds ?? "Not updated"}
             </p>
+
             <p className="hospital-info">
-              Available Oxygen Units: {hospital.availableOxygen}
+              Available Oxygen Units:{" "}
+              {hospital.availability?.oxygenUnits ?? "Not updated"}
             </p>
+
             <p className="hospital-info">
-              Available Ambulances: {hospital.ambulancesAvailable}
+              Available Ambulances:{" "}
+              {hospital.availability?.ambulances ?? "Not updated"}
             </p>
 
             {/* TO EDIT AN EXISTING HOSPITAL DETAILS */}
