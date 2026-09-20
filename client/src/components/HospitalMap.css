@@ -1,509 +1,381 @@
 /* =========================================================
-   CURAMAP - HOSPITAL MAP
-   Complete redesigned stylesheet
+   CURAMAP MODERN MAP & DISCOVERY STYLES
    ========================================================= */
 
-.map-container {
+.discovery-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
   width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 24px;
-  box-sizing: border-box;
-
-  background: var(--surface-bg);
-  color: var(--text-color);
-  font-family: var(--font-style-1);
-
-  border-radius: 20px;
-  box-shadow: 0 8px 28px rgba(48, 24, 80, 0.12);
 }
 
+/* Filter & Search Header */
+.discovery-controls-card {
+  background: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
-/* =========================================================
-   SEARCH AREA
-   ========================================================= */
+.search-input-wrapper {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  width: 100%;
+}
 
-.map-search-bar {
+.search-field-container {
+  flex: 1;
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
+}
+
+.search-icon-inside {
+  position: absolute;
+  left: 14px;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.modern-search-input {
   width: 100%;
-  margin-bottom: 16px;
-}
-
-.map-search-input {
-  flex: 1;
-  height: 46px;
-  padding: 0 16px;
-
-  border: 2px solid #ddd5ee;
-  border-radius: 12px;
-
-  background: var(--form-bg);
+  height: 48px;
+  padding: 0 42px 0 42px;
+  font-size: 0.95rem;
+  font-family: inherit;
   color: var(--text-color);
-
-  font-family: inherit;
-  font-size: 15px;
-
+  background: var(--bg-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
   outline: none;
-  box-sizing: border-box;
-
   transition: all 0.2s ease;
 }
 
-.map-search-input::placeholder {
-  color: #999;
+.modern-search-input:focus {
+  background: var(--surface-bg);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-.map-search-input:focus {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.1);
-}
-
-.map-search-button {
-  height: 46px;
-  padding: 0 20px;
-
+.clear-search-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
   border: none;
-  border-radius: 12px;
-
-  background: var(--accent-color);
-  color: white;
-
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 1.1rem;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.map-search-button:hover {
+.clear-search-btn:hover {
+  color: var(--text-color);
+}
+
+.search-submit-btn {
+  height: 48px;
+  padding: 0 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: white;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+  white-space: nowrap;
+}
+
+.search-submit-btn:hover:not(:disabled) {
   background: var(--button-hover);
   transform: translateY(-1px);
 }
 
-.map-search-button:active {
-  transform: translateY(0);
+.search-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
+/* Radius & Quick Filter Chips */
+.filter-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
 
-/* =========================================================
-   RADIUS SELECTOR
-   ========================================================= */
-
-.map-radius-selector {
+.radius-chips-group {
   display: flex;
   align-items: center;
-  gap: 10px;
-
-  margin-bottom: 18px;
-
-  font-size: 14px;
-  font-weight: 600;
+  gap: 0.4rem;
+  flex-wrap: wrap;
 }
 
-.map-radius-selector label {
-  color: var(--text-color);
-}
-
-.map-radius-selector select {
-  height: 40px;
-  padding: 0 12px;
-
-  border: 2px solid #ddd5ee;
-  border-radius: 10px;
-
-  background: var(--form-bg);
-  color: var(--text-color);
-
-  font-family: inherit;
-  font-size: 14px;
-
-  outline: none;
-  cursor: pointer;
-
-  transition: border-color 0.2s ease;
-}
-
-.map-radius-selector select:focus {
-  border-color: var(--accent-color);
-}
-
-
-/* =========================================================
-   NEAREST HOSPITALS
-   ========================================================= */
-
-/*
-   The current JSX uses inline styles for this section.
-   !important is intentionally used here so the new design
-   overrides those old inline styles.
-*/
-
-.map-container > div:first-child {
-  margin-bottom: 20px !important;
-  padding: 18px !important;
-
-  background: var(--form-bg) !important;
-
-  border: 1px solid #e5def0;
-  border-radius: 16px !important;
-
-  box-shadow: 0 4px 16px rgba(48, 24, 80, 0.08) !important;
-}
-
-.map-container > div:first-child h3 {
-  margin: 0 0 14px !important;
-
-  color: var(--heading-color);
-  font-size: 18px;
+.radius-label {
+  font-size: 0.85rem;
   font-weight: 700;
-
-  letter-spacing: 0.2px;
+  color: var(--text-secondary);
+  margin-right: 0.25rem;
 }
 
-.map-container > div:first-child > div {
-  padding: 12px 4px !important;
-
-  border-bottom-color: #ebe6f2 !important;
-}
-
-.map-container > div:first-child strong {
-  display: block;
-
-  color: var(--heading-color);
-
-  font-size: 15px;
-  font-weight: 700;
-
-  margin-bottom: 4px;
-}
-
-.map-container > div:first-child div div {
-  color: #777 !important;
-
-  font-size: 13px !important;
-  font-weight: 500;
-}
-
-.map-container > div:first-child button {
-  min-width: 64px;
-  padding: 7px 14px !important;
-
-  border: 1px solid var(--accent-color);
-  border-radius: 8px;
-
-  background: transparent;
-  color: var(--accent-color);
-
-  font-family: inherit;
-  font-size: 13px;
+.radius-chip {
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-muted);
+  color: var(--text-color);
+  font-size: 0.82rem;
   font-weight: 600;
-
   cursor: pointer;
-
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
-.map-container > div:first-child button:hover {
-  background: var(--accent-color);
+.radius-chip:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.radius-chip.active {
+  background: var(--primary-color);
   color: white;
-
-  transform: translateY(-1px);
+  border-color: var(--primary-color);
+  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.25);
 }
 
+.status-counter-pill {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-muted);
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border-color);
+}
 
-/* =========================================================
-   LOADING
-   ========================================================= */
+/* Main Split / Dual View Layout */
+.discovery-content-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1.5rem;
+  align-items: start;
+}
 
-.map-loading-text {
+/* Map Container Frame */
+.map-canvas-card {
+  background: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  position: sticky;
+  top: 80px;
+}
+
+.map-card-header {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
-  gap: 8px;
-
-  margin: 12px 0;
-
-  color: var(--info-color);
-  font-size: 14px;
-  font-weight: 500;
+  justify-content: space-between;
+  background: var(--bg-muted);
 }
 
-
-/* =========================================================
-   NO HOSPITALS
-   ========================================================= */
-
-.no-hospitals-warning {
-  margin: 14px 0;
-  padding: 12px 15px;
-
-  border: 1px solid #f0d8d8;
-  border-radius: 10px;
-
-  background: #fff5f5;
-  color: var(--error-color);
-
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-
-/* =========================================================
-   GOOGLE MAP
-   ========================================================= */
-
-.map-container .gm-style {
-  font-family: var(--font-style-1);
-}
-
-.map-container > div[style*="height"] {
-  overflow: hidden;
-  border-radius: 16px;
-}
-
-
-/* =========================================================
-   GOOGLE MAP INFOWINDOW
-   ========================================================= */
-
-.gm-style .gm-style-iw-c {
-  min-width: 260px !important;
-  max-width: 330px !important;
-
-  padding: 18px !important;
-
-  border-radius: 14px !important;
-
-  background: var(--form-bg) !important;
-  color: var(--text-color);
-
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
-}
-
-.gm-style .gm-style-iw-d {
-  overflow: auto !important;
-}
-
-.gm-style .gm-style-iw-c h4 {
-  margin: 0 0 10px !important;
-
-  color: var(--heading-color);
-
-  font-size: 17px;
+.map-header-title {
+  font-size: 0.92rem;
   font-weight: 700;
+  color: var(--heading-color);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
 
+.map-header-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--success-color);
+}
+
+.live-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--success-color);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+/* Hospital List Sidebar */
+.hospital-list-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.list-pane-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.25rem;
+}
+
+.list-pane-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--heading-color);
+  margin: 0;
+}
+
+.hospital-cards-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 700px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Custom Scrollbar */
+.hospital-cards-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.hospital-cards-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 6px;
+}
+
+/* Alert States */
+.map-status-banner {
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.map-status-banner.loading {
+  background: var(--primary-light);
+  color: var(--primary-color);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.map-status-banner.empty {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+/* Modern InfoWindow Styling */
+.gm-style .gm-style-iw-c {
+  min-width: 280px !important;
+  max-width: 340px !important;
+  padding: 1.25rem !important;
+  border-radius: 14px !important;
+  background: var(--surface-bg) !important;
+  color: var(--text-color) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.iw-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.iw-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--heading-color);
   line-height: 1.3;
 }
 
-.gm-style .gm-style-iw-c p {
-  margin: 7px 0;
-
-  color: var(--text-color);
-
-  font-family: var(--font-style-1);
-  font-size: 13px;
-
-  line-height: 1.45;
+.iw-address {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
 }
 
-
-/* Address */
-.gm-style .gm-style-iw-c p:first-of-type {
-  color: #777;
+.iw-distance {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary-color);
 }
 
-
-/* Distance */
-.gm-style .gm-style-iw-c p:nth-of-type(2) {
-  color: var(--accent-color);
-  font-weight: 600;
-}
-
-
-/* =========================================================
-   INFO WINDOW BUTTON
-   ========================================================= */
-
-.gm-style .gm-style-iw-c button {
-  width: 100%;
-
-  margin-top: 10px;
-  padding: 10px 14px;
-
-  border: none;
-  border-radius: 9px;
-
-  background: var(--accent-color);
-  color: white;
-
-  font-family: var(--font-style-1);
-  font-size: 13px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition: all 0.2s ease;
-}
-
-.gm-style .gm-style-iw-c button:hover {
-  background: var(--button-hover);
-  transform: translateY(-1px);
-}
-
-
-/* =========================================================
-   VERIFIED STATUS
-   ========================================================= */
-
-.gm-style .gm-style-iw-c p:last-child {
-  margin-top: 12px;
-
-  padding: 8px 10px;
-
+.iw-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  background: var(--bg-muted);
+  padding: 0.5rem;
   border-radius: 8px;
-
-  background: rgba(46, 125, 50, 0.1);
-  color: #2e7d32;
-
-  font-size: 12px;
-  font-weight: 600;
+  text-align: center;
 }
 
-
-/* =========================================================
-   MAP WINDOW CLOSE BUTTON
-   ========================================================= */
-
-.gm-style .gm-style-iw-tc::after {
-  background: var(--form-bg) !important;
+.iw-grid-item {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
 }
 
-
-/* =========================================================
-   DARK MODE
-   ========================================================= */
-
-body.dark .map-container {
-  background: var(--surface-bg);
-  color: var(--text-color);
-
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
-}
-
-body.dark .map-search-input,
-body.dark .map-radius-selector select {
-  border-color: #40364c;
-  background: var(--form-bg);
+.iw-grid-item strong {
+  display: block;
+  font-size: 0.9rem;
   color: var(--text-color);
 }
 
-body.dark .map-search-input::placeholder {
-  color: #888;
+.iw-direction-btn {
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.5rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  transition: background 0.15s ease;
 }
 
-body.dark .map-container > div:first-child {
-  border-color: #40364c;
-  background: var(--form-bg) !important;
+.iw-direction-btn:hover {
+  background: var(--button-hover);
 }
 
-body.dark .map-container > div:first-child > div {
-  border-bottom-color: #40364c !important;
-}
-
-body.dark .map-container > div:first-child div div {
-  color: #aaa !important;
-}
-
-body.dark .no-hospitals-warning {
-  border-color: #593838;
-  background: #2b1d1d;
-}
-
-body.dark .gm-style .gm-style-iw-c {
-  background: var(--form-bg) !important;
-  color: var(--text-color);
-}
-
-body.dark .gm-style .gm-style-iw-c h4,
-body.dark .gm-style .gm-style-iw-c p {
-  color: var(--text-color);
-}
-
-body.dark .gm-style .gm-style-iw-c p:first-of-type {
-  color: #aaa;
-}
-
-body.dark .gm-style .gm-style-iw-c p:nth-of-type(2) {
-  color: var(--accent-color);
-}
-
-
-/* =========================================================
-   RESPONSIVE - TABLET
-   ========================================================= */
-
-@media (max-width: 768px) {
-  .map-container {
-    padding: 18px;
-    border-radius: 16px;
+/* Responsive */
+@media (max-width: 1024px) {
+  .discovery-content-grid {
+    grid-template-columns: 1fr;
   }
-
-  .map-search-bar {
-    flex-direction: column;
-    align-items: stretch;
+  .map-canvas-card {
+    position: static;
   }
-
-  .map-search-input,
-  .map-search-button {
-    width: 100%;
-  }
-
-  .map-radius-selector {
-    margin-bottom: 14px;
-  }
-
-  .map-container > div:first-child {
-    padding: 15px !important;
-  }
-}
-
-
-/* =========================================================
-   RESPONSIVE - MOBILE
-   ========================================================= */
-
-@media (max-width: 480px) {
-  .map-container {
-    padding: 12px;
-    border-radius: 12px;
-  }
-
-  .map-search-input {
-    height: 44px;
-    font-size: 14px;
-  }
-
-  .map-search-button {
-    height: 44px;
-  }
-
-  .map-radius-selector {
-    font-size: 13px;
-  }
-
-  .map-container > div:first-child h3 {
-    font-size: 16px;
-  }
-
-  .map-container > div:first-child strong {
-    font-size: 14px;
-  }
-
-  .gm-style .gm-style-iw-c {
-    min-width: 220px !important;
-    max-width: 270px !important;
-    padding: 14px !important;
+  .hospital-cards-scroll {
+    max-height: none;
   }
 }

@@ -1,76 +1,105 @@
 :root {
-  /* Primary Brand Colors */
-  --primary-color: #5a189a; /* Royal Purple */
-  --secondary-color: #9d174d; /* Deep Rose Red */
-  --accent-color: #14b8a6; /* Teal Cyan Pulse */
+  /* Modern Medical Healthcare Palette */
+  --primary-color: #1d4ed8;       /* Trust Blue / Medical Indigo */
+  --primary-dark: #1e40af;
+  --primary-light: #eff6ff;
+  --secondary-color: #0f766e;     /* Clinical Teal */
+  --accent-color: #0284c7;        /* Medical Sky Cyan */
+  --accent-hover: #0369a1;
 
-  /* Backgrounds and Surfaces */
-  --bg-color: #f4f6fb; /* Clean Blue-White */
-  --surface-bg: #f0eefa; /* Soft Lavender Surface */
-  --form-bg: #ffffff; /* Pure White Form Area */
-  --border-color: #d1d5db; /* Light Gray Border */
+  /* Backgrounds & Surfaces */
+  --bg-color: #f8fafc;            /* Clean Clinical Slate */
+  --surface-bg: #ffffff;          /* Crisp White Surface */
+  --form-bg: #ffffff;             /* Pure White Form Container */
+  --border-color: #e2e8f0;        /* Light Border */
+  --border-focus: #3b82f6;        /* Focus Blue Ring */
 
-  /* Text and UI */
-  --text-color: #1e293b; /* Charcoal Navy */
-  --heading-color: #3b0764; /* Dark Regal Purple */
-  --button-hover: #7e22ce; /* Vibrant Purple Gradient Start */
-  --button-hover-alt: #be185d; /* Electric Red Gradient End */
+  /* Text & Hierarchy */
+  --text-color: #1e293b;          /* Charcoal Slate */
+  --text-secondary: #64748b;      /* Neutral Secondary */
+  --heading-color: #0f172a;       /* Deep Navy Slate */
 
-  /* Neumorphism-specific colors */
-  --neu-bg: #e0e0e0; /* Light surface for neu containers */
-  --neu-shadow-dark: rgba(163, 177, 198, 0.6); /* Bottom-right shadow */
-  --neu-shadow-light: rgba(255, 255, 255, 0.7); /* Top-left highlight */
-  --neu-inset-dark: rgba(163, 177, 198, 0.6); /* Inset dark */
-  --neu-inset-light: rgba(255, 255, 255, 0.6); /* Inset light */
+  /* Buttons & Interactions */
+  --button-hover: #1e40af;
+  --button-hover-alt: #0369a1;
 
-  /* Alerts */
-  --error-color: #dc2626; /* Strong Alert Red */
-  --success-color: #10b981; /* Emerald Green */
-  --info-color: #3b82f6; /* Sharp Blue Info */
+  /* Status Indicators (Medical) */
+  --error-color: #ef4444;         /* Urgent Red */
+  --success-color: #10b981;       /* Emerald Available */
+  --warning-color: #f59e0b;       /* Amber Limited */
+  --info-color: #3b82f6;          /* Info Sky */
 
-  /* Fonts */
-  --font-style-1: "Winky Rough", sans-serif;
-  --font-style-2: "Bungee", sans-serif;
-  --font-style-poppins: "Poppins", sans-serif;
-  --font-style-roboto: "Roboto", sans-serif;
+  /* Modern Card & Shadow Tokens */
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --card-shadow-hover: 0 10px 25px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(226, 232, 240, 0.8);
+
+  /* Clean Professional Fonts */
+  --font-style-poppins: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-style-roboto: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Poppins", sans-serif;
 }
 
 body.dark-mode {
-  /* Primary Brand Colors */
-  --primary-color: #6b3c9a; /* Soft Violet for Dark Mode */
-  --secondary-color: #f43f5e; /* Vivid Rose Red */
-  --accent-color: #2dd4bf; /* Bright Teal Pop */
+  --primary-color: #3b82f6;       /* Bright Blue for Dark */
+  --primary-dark: #2563eb;
+  --primary-light: #1e293b;
+  --secondary-color: #14b8a6;
+  --accent-color: #38bdf8;
+  --accent-hover: #7dd3fc;
 
-  /* Backgrounds and Surfaces */
-  --bg-color: #111827; /* Midnight Navy */
-  --surface-bg: #1c1f2b; /* Graphite Surface */
-  --form-bg: #1c1f2b; /* Near-Black Form Area */
-  --border-color: #374151; /* Steel Gray */
+  --bg-color: #0b1120;            /* Deep Midnight Navy */
+  --surface-bg: #131d31;          /* Dark Slate Card Surface */
+  --form-bg: #131d31;
+  --border-color: #1e293b;
+  --border-focus: #60a5fa;
 
-  /* Text and UI */
-  --text-color: #bbc1ce; /* Soft White Text */
-  --heading-color: #c4b5fd; /* Soft Lilac for Headers */
-  --button-hover: #9333ea; /* Deep Purple Glow */
-  --button-hover-alt: #f43f5e; /* Strong Accent Pink */
+  --text-color: #f1f5f9;          /* Crisp Light Text */
+  --text-secondary: #94a3b8;
+  --heading-color: #ffffff;
 
-  /* Alerts */
-  --error-color: #f87171; /* Lively Red */
-  --success-color: #34d399; /* Neon Emerald */
-  --info-color: #60a5fa; /* Bright Info Blue */
-  
+  --button-hover: #2563eb;
+  --button-hover-alt: #0284c7;
 
-  /* ✅ Neumorphism (optional fallback in dark, use only with careful background match) */
-  --neu-bg: #1e1e1e;
-  --neu-shadow-dark: rgba(0, 0, 0, 0.3);
-  --neu-shadow-light: rgba(255, 255, 255, 0.05);
-  --neu-inset-dark: rgba(0, 0, 0, 0.4);
-  --neu-inset-light: rgba(255, 255, 255, 0.1);
+  --error-color: #f87171;
+  --success-color: #34d399;
+  --warning-color: #fbbf24;
+  --info-color: #60a5fa;
+
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: 0 10px 25px -3px rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(19, 29, 49, 0.85);
+  --glass-border: rgba(30, 41, 59, 0.8);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: var(--font-style-1);
+  font-family: var(--font-sans);
   margin: 0;
   padding: 0;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Common utility classes */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: var(--accent-color);
+}
+
+button {
+  font-family: inherit;
 }

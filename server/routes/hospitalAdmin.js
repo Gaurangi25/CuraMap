@@ -1,6 +1,5 @@
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
-import hospitalAdminMiddleware from "../middleware/hospitalAdminMiddleware.js";
 import superAdminMiddleware from "../middleware/superAdminMiddleware.js";
 
 import {

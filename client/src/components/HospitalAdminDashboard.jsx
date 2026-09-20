@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./Dashboard.css";
 
 function HospitalAdminDashboard() {
-  const API =
-    process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+  const API = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
   const [hospital, setHospital] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState({ type: "", message: "" });
 
   const [form, setForm] = useState({
     availableBeds: "",
@@ -20,44 +21,35 @@ function HospitalAdminDashboard() {
 
   const token = localStorage.getItem("token");
 
-  // ================= GET MY HOSPITAL =================
+  // Fetch administrator's assigned hospital
   useEffect(() => {
     const fetchHospital = async () => {
       try {
-        const response = await axios.get(
-          `${API}/api/hospitals/mine`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get(`${API}/api/hospitals/mine`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         const data = response.data;
-
         setHospital(data);
 
         setForm({
-          availableBeds:
-            data.availability?.availableBeds ?? "",
-          icuBeds:
-            data.availability?.icuBeds ?? "",
-          oxygenUnits:
-            data.availability?.oxygenUnits ?? "",
-          ventilators:
-            data.availability?.ventilators ?? "",
-          ambulances:
-            data.availability?.ambulances ?? "",
-          emergencyStatus:
-            data.availability?.emergencyStatus || "Available",
+          availableBeds: data.availability?.availableBeds ?? "",
+          icuBeds: data.availability?.icuBeds ?? "",
+          oxygenUnits: data.availability?.oxygenUnits ?? "",
+          ventilators: data.availability?.ventilators ?? "",
+          ambulances: data.availability?.ambulances ?? "",
+          emergencyStatus: data.availability?.emergencyStatus || "Available",
         });
       } catch (err) {
         console.error("Error fetching hospital:", err);
-
-        alert(
-          err.response?.data?.error ||
-            "Could not load your hospital"
-        );
+        setFeedback({
+          type: "error",
+          message:
+            err.response?.data?.error ||
+            "Could not load your assigned hospital profile.",
+        });
       } finally {
         setLoading(false);
       }
@@ -66,53 +58,34 @@ function HospitalAdminDashboard() {
     fetchHospital();
   }, [API, token]);
 
-  // ================= HANDLE INPUT =================
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setForm((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  // ================= UPDATE AVAILABILITY =================
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!hospital) return;
 
     setSaving(true);
+    setFeedback({ type: "", message: "" });
 
     try {
       const response = await axios.patch(
         `${API}/api/hospitals/${hospital._id}/availability`,
         {
           availableBeds:
-            form.availableBeds === ""
-              ? null
-              : Number(form.availableBeds),
-
-          icuBeds:
-            form.icuBeds === ""
-              ? null
-              : Number(form.icuBeds),
-
+            form.availableBeds === "" ? null : Number(form.availableBeds),
+          icuBeds: form.icuBeds === "" ? null : Number(form.icuBeds),
           oxygenUnits:
-            form.oxygenUnits === ""
-              ? null
-              : Number(form.oxygenUnits),
-
+            form.oxygenUnits === "" ? null : Number(form.oxygenUnits),
           ventilators:
-            form.ventilators === ""
-              ? null
-              : Number(form.ventilators),
-
+            form.ventilators === "" ? null : Number(form.ventilators),
           ambulances:
-            form.ambulances === ""
-              ? null
-              : Number(form.ambulances),
-
+            form.ambulances === "" ? null : Number(form.ambulances),
           emergencyStatus: form.emergencyStatus,
         },
         {
@@ -123,156 +96,269 @@ function HospitalAdminDashboard() {
       );
 
       setHospital(response.data.hospital);
+      setFeedback({
+        type: "success",
+        message: "Hospital availability metrics updated successfully!",
+      });
 
-      alert("Hospital availability updated successfully!");
+      // Clear success banner after 4 seconds
+      setTimeout(() => {
+        setFeedback({ type: "", message: "" });
+      }, 4000);
     } catch (err) {
       console.error("Error updating availability:", err);
-
-      alert(
-        err.response?.data?.error ||
-          "Could not update hospital availability"
-      );
+      setFeedback({
+        type: "error",
+        message:
+          err.response?.data?.error ||
+          "Could not update hospital availability.",
+      });
     } finally {
       setSaving(false);
     }
   };
 
-  // ================= LOADING =================
   if (loading) {
     return (
-      <div style={styles.container}>
-        <h1>Hospital Admin Dashboard</h1>
-        <p>Loading hospital information...</p>
+      <div className="dashboard-page-container">
+        <div style={{ textAlign: "center", padding: "4rem 1rem", color: "var(--text-secondary)" }}>
+          <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>⏳</div>
+          <h2>Loading Hospital Administrator Portal...</h2>
+        </div>
       </div>
     );
   }
 
-  // ================= NO HOSPITAL =================
   if (!hospital) {
     return (
-      <div style={styles.container}>
-        <h1>Hospital Admin Dashboard</h1>
-        <p>No hospital is assigned to this account.</p>
+      <div className="dashboard-page-container">
+        <div className="admin-facility-card">
+          <div className="facility-main-info">
+            <h2 className="facility-name">No Hospital Assigned</h2>
+            <p className="facility-meta-row">
+              Your account does not currently have an assigned hospital facility.
+              If you represent a hospital, submit a verification request.
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
 
-  const lastUpdated =
-    hospital.availability?.lastUpdated;
+  const lastUpdated = hospital.availability?.lastUpdated;
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>
-          Hospital Admin Dashboard
-        </h1>
+    <div className="dashboard-page-container">
+      {/* Top Facility Card */}
+      <div className="admin-facility-card">
+        <div className="facility-main-info">
+          <div className="facility-eyebrow">
+            <span>Verified Facility Administration</span>
+            <span>•</span>
+            <span>ID: {hospital._id}</span>
+          </div>
 
-        {/* ================= HOSPITAL INFO ================= */}
-        <div style={styles.hospitalInfo}>
-          <h2>{hospital.name}</h2>
+          <h1 className="facility-name">{hospital.name}</h1>
 
-          <p>
-            <strong>Address:</strong>{" "}
-            {hospital.address || "Not available"}
-          </p>
+          <div className="facility-meta-row">
+            <span className="facility-meta-item">
+              📍 <strong>{hospital.address || "Address unavailable"}</strong>
+            </span>
+            {hospital.phone && (
+              <span className="facility-meta-item">
+                📞 <strong>{hospital.phone}</strong>
+              </span>
+            )}
+            {hospital.type && (
+              <span className="facility-meta-item">
+                🏷️ Type: <strong>{hospital.type}</strong>
+              </span>
+            )}
+            {hospital.totalBeds && (
+              <span className="facility-meta-item">
+                🏥 Total Capacity: <strong>{hospital.totalBeds} beds</strong>
+              </span>
+            )}
+          </div>
+        </div>
 
-          <p>
-            <strong>Phone:</strong>{" "}
-            {hospital.phone || "Not available"}
+        <div className="facility-status-box">
+          <span
+            className={`emergency-tag ${
+              (hospital.availability?.emergencyStatus || "Available").toLowerCase()
+            }`}
+          >
+            ● Emergency Status: {hospital.availability?.emergencyStatus || "Available"}
+          </span>
+
+          <span style={{ fontSize: "0.82rem", color: "var(--text-secondary)" }}>
+            🕒 Last Updated:{" "}
+            <strong>
+              {lastUpdated
+                ? new Date(lastUpdated).toLocaleString()
+                : "Awaiting first log"}
+            </strong>
+          </span>
+        </div>
+      </div>
+
+      {/* Live Resource Stat Cards */}
+      <div className="admin-stats-grid">
+        <div className="admin-stat-card">
+          <span className="stat-icon-wrapper">🛏️</span>
+          <span className="stat-metric-label">Available Beds</span>
+          <span className="stat-metric-number">
+            {hospital.availability?.availableBeds ?? "—"}
+          </span>
+        </div>
+
+        <div className="admin-stat-card">
+          <span className="stat-icon-wrapper">🏥</span>
+          <span className="stat-metric-label">ICU Beds</span>
+          <span className="stat-metric-number">
+            {hospital.availability?.icuBeds ?? "—"}
+          </span>
+        </div>
+
+        <div className="admin-stat-card">
+          <span className="stat-icon-wrapper">💨</span>
+          <span className="stat-metric-label">Oxygen Units</span>
+          <span className="stat-metric-number">
+            {hospital.availability?.oxygenUnits ?? "—"}
+          </span>
+        </div>
+
+        <div className="admin-stat-card">
+          <span className="stat-icon-wrapper">🫁</span>
+          <span className="stat-metric-label">Ventilators</span>
+          <span className="stat-metric-number">
+            {hospital.availability?.ventilators ?? "—"}
+          </span>
+        </div>
+
+        <div className="admin-stat-card">
+          <span className="stat-icon-wrapper">🚑</span>
+          <span className="stat-metric-label">Ambulances</span>
+          <span className="stat-metric-number">
+            {hospital.availability?.ambulances ?? "—"}
+          </span>
+        </div>
+      </div>
+
+      {/* Feedback Banner */}
+      {feedback.message && (
+        <div
+          style={{
+            padding: "1rem 1.25rem",
+            borderRadius: "12px",
+            fontSize: "0.95rem",
+            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            background: feedback.type === "success" ? "#ecfdf5" : "#fef2f2",
+            color: feedback.type === "success" ? "#065f46" : "#b91c1c",
+            border: `1px solid ${feedback.type === "success" ? "#a7f3d0" : "#fecaca"}`,
+          }}
+        >
+          <span>{feedback.type === "success" ? "✅" : "⚠️"}</span>
+          <span>{feedback.message}</span>
+        </div>
+      )}
+
+      {/* Update Availability Form Card */}
+      <div className="admin-form-card">
+        <div className="admin-form-header">
+          <h2 className="admin-form-title">Update Real-Time Availability</h2>
+          <p className="admin-form-desc">
+            Provide the latest resource counts. These values are reflected immediately on the public discovery map.
           </p>
         </div>
 
-        <hr />
-
-        {/* ================= AVAILABILITY ================= */}
-        <h2>Update Hospital Availability</h2>
-
         <form onSubmit={handleSubmit}>
-          <div style={styles.grid}>
-            <div style={styles.field}>
-              <label>Available Beds</label>
-
+          <div className="admin-form-grid">
+            <div className="admin-form-field">
+              <label htmlFor="availableBeds">Available General Beds</label>
               <input
+                id="availableBeds"
                 type="number"
                 min="0"
                 name="availableBeds"
                 value={form.availableBeds}
                 onChange={handleChange}
-                placeholder="Enter available beds"
+                placeholder="e.g. 24"
+                className="admin-input"
               />
             </div>
 
-            <div style={styles.field}>
-              <label>ICU Beds</label>
-
+            <div className="admin-form-field">
+              <label htmlFor="icuBeds">Available ICU Beds</label>
               <input
+                id="icuBeds"
                 type="number"
                 min="0"
                 name="icuBeds"
                 value={form.icuBeds}
                 onChange={handleChange}
-                placeholder="Enter ICU beds"
+                placeholder="e.g. 5"
+                className="admin-input"
               />
             </div>
 
-            <div style={styles.field}>
-              <label>Oxygen Units</label>
-
+            <div className="admin-form-field">
+              <label htmlFor="oxygenUnits">Available Oxygen Units</label>
               <input
+                id="oxygenUnits"
                 type="number"
                 min="0"
                 name="oxygenUnits"
                 value={form.oxygenUnits}
                 onChange={handleChange}
-                placeholder="Enter oxygen units"
+                placeholder="e.g. 40"
+                className="admin-input"
               />
             </div>
 
-            <div style={styles.field}>
-              <label>Ventilators</label>
-
+            <div className="admin-form-field">
+              <label htmlFor="ventilators">Available Ventilators</label>
               <input
+                id="ventilators"
                 type="number"
                 min="0"
                 name="ventilators"
                 value={form.ventilators}
                 onChange={handleChange}
-                placeholder="Enter ventilators"
+                placeholder="e.g. 8"
+                className="admin-input"
               />
             </div>
 
-            <div style={styles.field}>
-              <label>Ambulances</label>
-
+            <div className="admin-form-field">
+              <label htmlFor="ambulances">Ambulances on Standby</label>
               <input
+                id="ambulances"
                 type="number"
                 min="0"
                 name="ambulances"
                 value={form.ambulances}
                 onChange={handleChange}
-                placeholder="Enter ambulances"
+                placeholder="e.g. 3"
+                className="admin-input"
               />
             </div>
 
-            <div style={styles.field}>
-              <label>Emergency Status</label>
-
+            <div className="admin-form-field">
+              <label htmlFor="emergencyStatus">Emergency Intake Status</label>
               <select
+                id="emergencyStatus"
                 name="emergencyStatus"
                 value={form.emergencyStatus}
                 onChange={handleChange}
+                className="admin-select"
               >
-                <option value="Available">
-                  Available
-                </option>
-
-                <option value="Limited">
-                  Limited
-                </option>
-
-                <option value="Unavailable">
-                  Unavailable
-                </option>
+                <option value="Available">Available (Accepting all emergencies)</option>
+                <option value="Limited">Limited (Critical cases only / Near capacity)</option>
+                <option value="Unavailable">Unavailable (Intake temporarily paused)</option>
               </select>
             </div>
           </div>
@@ -280,79 +366,14 @@ function HospitalAdminDashboard() {
           <button
             type="submit"
             disabled={saving}
-            style={styles.button}
+            className="admin-save-btn"
           >
-            {saving
-              ? "Updating..."
-              : "Update Availability"}
+            {saving ? "Saving Updates..." : "Save Availability Metrics →"}
           </button>
         </form>
-
-        {/* ================= LAST UPDATED ================= */}
-        <div style={styles.updated}>
-          <strong>Last Updated:</strong>{" "}
-          {lastUpdated
-            ? new Date(lastUpdated).toLocaleString()
-            : "Not updated yet"}
-        </div>
       </div>
     </div>
   );
 }
-
-// ================= STYLES =================
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    padding: "40px 20px",
-    background: "#f5f5f5",
-  },
-
-  card: {
-    maxWidth: "900px",
-    margin: "0 auto",
-    background: "white",
-    padding: "30px",
-    borderRadius: "12px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-  },
-
-  title: {
-    marginBottom: "25px",
-  },
-
-  hospitalInfo: {
-    marginBottom: "25px",
-  },
-
-  grid: {
-    display: "grid",
-    gridTemplateColumns:
-      "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "20px",
-    marginTop: "20px",
-  },
-
-  field: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-
-  button: {
-    marginTop: "30px",
-    padding: "12px 24px",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
-
-  updated: {
-    marginTop: "25px",
-    padding: "15px",
-    background: "#f0f0f0",
-    borderRadius: "8px",
-  },
-};
 
 export default HospitalAdminDashboard;

@@ -1,89 +1,186 @@
-.hospital-profile {
+/* =========================================================
+   CURAMAP HOSPITAL PROFILE STYLES
+   ========================================================= */
+
+.hospital-profile-page {
+  max-width: 900px;
+  margin: 2.5rem auto 4rem;
+  padding: 0 1.5rem;
+}
+
+.profile-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: all 0.15s ease;
+}
+
+.profile-back-link:hover {
+  transform: translateX(-3px);
+}
+
+.profile-card-container {
+  background: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background: var(--bg-color);
-  padding: 3rem 2rem;
-  min-height: 70vh;
-  color: var(--text-color);
-  font-family: var(--font-style-poppins);
+  gap: 1.75rem;
 }
 
-/* Gradient border wrapper */
-.hospital-border {
-  background: conic-gradient(
-    from 0deg,
-    var(--accent-color),
-    var(--button-hover),
-    var(--secondary-color),
-    var(--accent-color)
-  );
-  padding: 2px; /* thickness of the border */
-  border-radius: 20px;
-  width: 100%;
-  max-width: 680px;
+.profile-header-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
-/* Actual container inside the border */
-.hospital-container {
-  background: var(--form-bg);
-  padding: 2.5rem 2rem;
-  border-radius: 18px;
-  max-width: 614px;
-  width: 100%;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  transition: box-shadow 0.3s ease;
-}
-
-.hospital-container:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
-.hospital-profile h2 {
-  font-family: var(--font-style-2);
-  color: var(--heading-color);
+.profile-title {
   font-size: 2rem;
-  margin-bottom: 1.5rem;
+  font-weight: 800;
+  color: var(--heading-color);
+  margin: 0 0 0.5rem;
+}
+
+.profile-address-text {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.profile-badges-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+/* Resources Grid */
+.profile-resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.profile-resource-box {
+  background: var(--bg-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
   text-align: center;
 }
 
-.hospital-profile p {
-  font-size: 1.05rem;
-  line-height: 1.7;
-  margin: 0.4rem 0;
+.profile-res-icon {
+  font-size: 1.75rem;
 }
 
-.hospital-profile strong {
-  font-weight: 600;
-  color: var(--primary-color);
+.profile-res-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.back-link {
-  align-self: flex-start;
+.profile-res-val {
+  font-size: 1.65rem;
+  font-weight: 900;
+  color: var(--heading-color);
+}
+
+/* Metadata List */
+.profile-metadata-table {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.profile-meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-muted);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.meta-row-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.meta-row-val {
   font-size: 0.95rem;
-  color: var(--primary-color);
-  text-decoration: none;
-  margin-bottom: 1rem;
   font-weight: 600;
-  transition: color 0.2s ease;
+  color: var(--text-color);
 }
 
-.back-link:hover {
-  color: var(--accent-color);
-  text-decoration: underline;
+/* Action Strip */
+.profile-actions-strip {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .hospital-container {
-    padding: 2rem 1.2rem;
-  }
+.btn-directions {
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.15s ease;
+}
 
-  .hospital-profile h2 {
-    font-size: 1.6rem;
-  }
+.btn-directions:hover {
+  background: var(--button-hover);
+  transform: translateY(-1px);
+}
 
-  .hospital-profile p {
-    font-size: 0.95rem;
-  }
+.btn-report-issue {
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: transparent;
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.15s ease;
+}
+
+.btn-report-issue:hover {
+  background: #fef2f2;
+}
+
+.btn-report-issue:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

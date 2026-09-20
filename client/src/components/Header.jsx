@@ -1,125 +1,176 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import "./Header.css";
 
 function Header() {
   const { user, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("curamap_theme");
+    if (savedTheme === "dark") {
+      setDarkMode(true);
+      document.body.classList.add("dark-mode");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    setDarkMode((prev) => {
+      const next = !prev;
+      if (next) {
+        document.body.classList.add("dark-mode");
+        localStorage.setItem("curamap_theme", "dark");
+      } else {
+        document.body.classList.remove("dark-mode");
+        localStorage.setItem("curamap_theme", "light");
+      }
+      return next;
+    });
+  };
 
   const handleLogout = () => {
     logout();
-    window.location.href = "/login";
+    navigate("/login");
   };
 
-  return (
-    <header
-      style={{
-        backgroundColor: "#5b18a6",
-        padding: "18px 20px",
-        textAlign: "center",
-        color: "white",
-      }}
-    >
-      <h1
-        style={{
-          margin: "0 0 22px",
-          fontSize: "36px",
-          fontWeight: "800",
-          letterSpacing: "1px",
-        }}
-      >
-        CURAMAP
-      </h1>
+  const isActive = (path) => location.pathname === path;
 
-      <nav
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "18px",
-        }}
-      >
-        <Link to="/" style={linkStyle}>
-          Home
+  return (
+    <header className="header-wrapper">
+      <div className="header-container">
+        {/* Brand Logo */}
+        <Link to="/" className="header-brand">
+          <span className="brand-icon">🏥</span>
+          <span className="brand-name">CuraMap</span>
+          <span className="brand-badge">Live v2</span>
         </Link>
 
-        {/* Normal User */}
-        {user?.role === "user" && (
-          <>
-            <Link to="/dashboard" style={linkStyle}>
-              Dashboard
-            </Link>
-
-            <Link to="/hospital-admin-request" style={linkStyle}>
-              Become Hospital Admin
-            </Link>
-          </>
-        )}
-
-        {/* Hospital Admin */}
-        {user?.role === "hospital_admin" && (
-          <>
-            <Link to="/hospital-admin" style={linkStyle}>
-              Admin Dashboard
-            </Link>
-
-            <Link to="/my-hospitals" style={linkStyle}>
-              My Hospital
-            </Link>
-          </>
-        )}
-
-        {/* Super Admin */}
-        {user?.role === "super_admin" && (
-          <Link to="/super-admin" style={linkStyle}>
-            Super Admin Dashboard
-          </Link>
-        )}
-
-        {user && (
-          <button
-            onClick={handleLogout}
-            style={{
-              ...linkStyle,
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontFamily: "inherit",
-            }}
+        {/* Navigation Links */}
+        <nav className="header-nav">
+          <Link
+            to="/"
+            className={`nav-item ${isActive("/") ? "active" : ""}`}
           >
-            Logout
-          </button>
-        )}
-      </nav>
+            Home
+          </Link>
 
-      <div
-        style={{
-          width: "110px",
-          height: "46px",
-          background: "white",
-          borderRadius: "25px",
-          margin: "25px auto 0",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-        }}
-      >
-        <div
-          style={{
-            width: "40px",
-            height: "40px",
-            background: "#ddd",
-            borderRadius: "50%",
-            margin: "3px",
-          }}
-        />
+          {/* Regular User Navigation */}
+          {(!user || user.role === "user") && (
+            <>
+              <Link
+                to="/user"
+                className={`nav-item ${
+                  isActive("/user") || isActive("/dashboard") ? "active" : ""
+                }`}
+              >
+                Find Hospitals
+              </Link>
+
+              {user && (
+                <Link
+                  to="/hospital-admin-request"
+                  className={`nav-item ${
+                    isActive("/hospital-admin-request") ? "active" : ""
+                  }`}
+                >
+                  Verify Hospital Admin
+                </Link>
+              )}
+            </>
+          )}
+
+          {/* Hospital Admin Navigation */}
+          {user?.role === "hospital_admin" && (
+            <>
+              <Link
+                to="/hospital-admin"
+                className={`nav-item ${
+                  isActive("/hospital-admin") ? "active" : ""
+                }`}
+              >
+                Resource Dashboard
+              </Link>
+
+              <Link
+                to="/my-hospitals"
+                className={`nav-item ${
+                  isActive("/my-hospitals") ? "active" : ""
+                }`}
+              >
+                My Hospital
+              </Link>
+            </>
+          )}
+
+          {/* Super Admin Navigation */}
+          {user?.role === "super_admin" && (
+            <Link
+              to="/super-admin"
+              className={`nav-item ${
+                isActive("/super-admin") ? "active" : ""
+              }`}
+            >
+              Admin Approvals
+            </Link>
+          )}
+        </nav>
+
+        {/* Right Actions: Theme Toggle, User Pill, and Auth Buttons */}
+        <div className="header-actions">
+          {/* Theme Toggle */}
+          <button
+            type="button"
+            className="theme-toggle-button"
+            onClick={toggleTheme}
+            title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label="Toggle theme"
+          >
+            {darkMode ? "☀️" : "🌙"}
+          </button>
+
+          {/* User Logged In State */}
+          {user ? (
+            <>
+              <div className="user-profile-pill">
+                <div className="user-avatar">
+                  {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                </div>
+                <span style={{ fontWeight: 600 }}>{user.name || "User"}</span>
+                <span className={`user-role-tag ${user.role}`}>
+                  {user.role === "hospital_admin"
+                    ? "Admin"
+                    : user.role === "super_admin"
+                    ? "Super Admin"
+                    : "Patient/User"}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="header-logout-btn"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            /* Guest / Logged Out State */
+            <>
+              <Link to="/login" className="auth-btn-ghost">
+                Sign In
+              </Link>
+              <Link to="/signup" className="auth-btn-primary">
+                Get Started
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );
 }
-
-const linkStyle = {
-  color: "white",
-  textDecoration: "none",
-  fontSize: "21px",
-  fontWeight: "700",
-};
 
 export default Header;

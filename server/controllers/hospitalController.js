@@ -1,4 +1,3 @@
-import Hospital from "../models/Hospital.js";
 import {
   getNearbyHospitalsFromOSM,
   searchHospitalsFromOSM,

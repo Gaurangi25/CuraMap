@@ -9,114 +9,191 @@ function MyHospitals() {
   const navigate = useNavigate();
 
   const [hospitals, setHospitals] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const apiBase = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
   useEffect(() => {
     async function fetchHospitals() {
       try {
-        const res = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/api/hospitals/mine`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const res = await axios.get(`${apiBase}/api/hospitals/mine`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
         setHospitals(Array.isArray(res.data) ? res.data : [res.data]);
       } catch (err) {
         console.error("Error fetching hospitals:", err);
+      } finally {
+        setLoading(false);
       }
     }
 
     if (token) fetchHospitals();
-  }, [token]);
+    else setLoading(false);
+  }, [token, apiBase]);
 
-  // DELETE A HOSPITAL BY ID
+  // Delete hospital confirmation
   async function handleDelete(id) {
-    const confirm = window.confirm(
-      "Are you sure you want to delete this hospital?",
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this hospital entry? This action cannot be undone."
     );
-    if (!confirm) return;
+    if (!confirmed) return;
 
     try {
-      await axios.delete(
-        `${process.env.REACT_APP_API_BASE_URL}/api/hospitals/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      await axios.delete(`${apiBase}/api/hospitals/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       setHospitals((prev) => prev.filter((h) => h._id !== id));
-      alert("Hospital deleted successfully.");
+      alert("Hospital entry deleted successfully.");
     } catch (err) {
       console.error("Delete failed:", err);
-      alert("Could not delete hospital");
+      alert("Could not delete hospital entry. Please try again.");
     }
   }
 
   return (
-    <div className="my-hospitals-container">
-      <h2 className="my-hospitals-title">My Hospital Entries</h2>
+    <div className="my-hospitals-wrapper">
+      {/* Header Banner */}
+      <div className="my-hospitals-header">
+        <div>
+          <h1 className="my-hospitals-title">My Managed Facilities</h1>
+          <p className="my-hospitals-subtitle">
+            Administrator account: <strong>{user?.name || user?.email}</strong>
+          </p>
+        </div>
 
-      <p className="my-hospitals-text">
-        Logged in as:{" "}
-        <strong>{user?.name || user?.email || "Unknown user"}</strong>
-      </p>
+        <div className="my-hospitals-nav-actions">
+          <button
+            type="button"
+            onClick={() => navigate("/hospital-admin")}
+            className="nav-action-btn primary"
+          >
+            📊 Resource Dashboard
+          </button>
 
-      <div className="my-hospitals-add">
-        <button onClick={() => navigate("/admin")} className="my-hospitals-btn">
-          ➕ Add New Hospital
-        </button>
-
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="my-hospitals-btn"
-        >
-          🧭 Back to Dashboard
-        </button>
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard")}
+            className="nav-action-btn"
+          >
+            🧭 User Portal
+          </button>
+        </div>
       </div>
 
-      {hospitals.length === 0 ? (
-        <p className="my-hospitals-empty">
-          You haven’t added any hospitals yet.. Click "Add New Hospital" to
-          begin.
-        </p>
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "3rem 1rem", color: "var(--text-secondary)" }}>
+          <p>Loading your facility entries...</p>
+        </div>
+      ) : hospitals.length === 0 ? (
+        <div className="empty-facility-card">
+          <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🏥</div>
+          <h2 style={{ margin: "0 0 0.5rem", color: "var(--heading-color)" }}>
+            No Assigned Hospitals Found
+          </h2>
+          <p style={{ margin: "0 0 1.5rem", color: "var(--text-secondary)" }}>
+            You do not have any hospitals assigned to your account.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/hospital-admin-request")}
+            className="nav-action-btn primary"
+          >
+            Submit Hospital Admin Verification →
+          </button>
+        </div>
       ) : (
         hospitals.map((hospital) => (
-          <div key={hospital._id} className="hospital-card">
-            <h3 className="hospital-name">{hospital.name}</h3>
-            <p className="hospital-info">Type: {hospital.type}</p>
-            <p className="hospital-info">Address: {hospital.address}</p>
-            <p className="hospital-info">
-              Available Beds:{" "}
-              {hospital.availability?.availableBeds ?? "Not updated"}
-            </p>
+          <div key={hospital._id} className="my-facility-card">
+            <div className="facility-card-top">
+              <div>
+                <h2 className="facility-card-name">{hospital.name}</h2>
+                <p className="facility-card-address">
+                  📍 {hospital.address || "Address unavailable"}
+                </p>
+                {hospital.type && (
+                  <span
+                    style={{
+                      display: "inline-block",
+                      marginTop: "0.4rem",
+                      fontSize: "0.8rem",
+                      fontWeight: 700,
+                      color: "var(--primary-color)",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    🏷️ Category: {hospital.type}
+                  </span>
+                )}
+              </div>
 
-            <p className="hospital-info">
-              Available Oxygen Units:{" "}
-              {hospital.availability?.oxygenUnits ?? "Not updated"}
-            </p>
+              {hospital.verified && (
+                <span
+                  style={{
+                    background: "#ecfdf5",
+                    color: "#047857",
+                    border: "1px solid #a7f3d0",
+                    padding: "4px 10px",
+                    borderRadius: "8px",
+                    fontSize: "0.8rem",
+                    fontWeight: 700,
+                  }}
+                >
+                  ✓ Verified Facility
+                </span>
+              )}
+            </div>
 
-            <p className="hospital-info">
-              Available Ambulances:{" "}
-              {hospital.availability?.ambulances ?? "Not updated"}
-            </p>
+            {/* Live Resource Overview Strip */}
+            <div className="facility-resources-strip">
+              <div className="facility-resource-box">
+                <span className="res-box-label">Available Beds</span>
+                <span className="res-box-val">
+                  {hospital.availability?.availableBeds ?? "—"}
+                </span>
+              </div>
 
-            {/* TO EDIT AN EXISTING HOSPITAL DETAILS */}
-            <div className="my-hospitals-actions">
+              <div className="facility-resource-box">
+                <span className="res-box-label">ICU Beds</span>
+                <span className="res-box-val">
+                  {hospital.availability?.icuBeds ?? "—"}
+                </span>
+              </div>
+
+              <div className="facility-resource-box">
+                <span className="res-box-label">Oxygen Units</span>
+                <span className="res-box-val">
+                  {hospital.availability?.oxygenUnits ?? "—"}
+                </span>
+              </div>
+
+              <div className="facility-resource-box">
+                <span className="res-box-label">Ambulances</span>
+                <span className="res-box-val">
+                  {hospital.availability?.ambulances ?? "—"}
+                </span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="facility-card-actions">
               <button
-                className="my-hospitals-btn edit"
+                type="button"
+                className="btn-facility-edit"
                 onClick={() => navigate(`/edit-hospital/${hospital._id}`)}
               >
-                ✏️ Edit
+                ✏️ Edit Facility Details
               </button>
 
-              {/* TO DELETE A HOSPITAL */}
               <button
-                className="my-hospitals-btn delete"
+                type="button"
+                className="btn-facility-delete"
                 onClick={() => handleDelete(hospital._id)}
               >
-                🗑️ Delete
+                🗑️ Remove Entry
               </button>
             </div>
           </div>
