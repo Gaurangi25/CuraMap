@@ -187,6 +187,58 @@ const buildGovernmentAddress = (
 
 /*
   Convert government record into CuraMap format.
+/*
+  Data sanitization helpers to prevent displaying placeholder "0", "None", or broken data.
+*/
+const cleanFieldValue = (val) => {
+  if (!val) return null;
+  const str = String(val)
+    .replace(/\\n/g, ", ")
+    .replace(/\s*\n\s*/g, ", ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (
+    !str ||
+    str === "0" ||
+    str === "00" ||
+    str === "NA" ||
+    str === "N/A" ||
+    str === "None" ||
+    str === "null" ||
+    str === "undefined" ||
+    str === "-"
+  ) {
+    return null;
+  }
+  return str;
+};
+
+const cleanPhoneValue = (val) => {
+  const cleaned = cleanFieldValue(val);
+  if (!cleaned) return null;
+  const digits = cleaned.replace(/\D/g, "");
+  if (digits.length < 5 || digits === "0") {
+    return null;
+  }
+  return cleaned;
+};
+
+const cleanWebsiteValue = (val) => {
+  const cleaned = cleanFieldValue(val);
+  if (!cleaned || !cleaned.includes(".") || cleaned.length < 4) {
+    return null;
+  }
+  return cleaned.startsWith("http") ? cleaned : `https://${cleaned}`;
+};
+
+const cleanBedCount = (val) => {
+  if (!val) return null;
+  const num = Number(val);
+  return Number.isFinite(num) && num > 0 ? num : null;
+};
+
+/*
+  Format government record into CuraMap format.
 */
 const toGovernmentHospital = (
   hospital,
@@ -200,22 +252,30 @@ const toGovernmentHospital = (
   const finalCoordinates =
     coordinates || csvCoordinates;
 
+  const phone =
+    cleanPhoneValue(hospital.Telephone) ||
+    cleanPhoneValue(hospital.Mobile_Number) ||
+    null;
+
+  const website = cleanWebsiteValue(hospital.Website);
+  const emergency = cleanFieldValue(hospital.Emergency_Services);
+  const speciality = cleanFieldValue(hospital.Specialties);
+  const totalBeds = cleanBedCount(hospital.Total_Num_Beds);
+  const ambulancePhone = cleanPhoneValue(hospital.Ambulance_Phone_No);
+
   return {
     _id: `gov-${hospital.Sr_No}`,
 
     name:
-      hospital.Hospital_Name ||
-      "Unnamed Hospital",
+      cleanFieldValue(hospital.Hospital_Name) ||
+      "Healthcare Facility",
 
     address:
       buildGovernmentAddress(
         hospital
-      ) || "Address unavailable",
+      ) || "Address available on map",
 
-    phone:
-      hospital.Telephone ||
-      hospital.Mobile_Number ||
-      "",
+    phone: phone || "",
 
     latitude:
       finalCoordinates?.latitude ??
@@ -225,55 +285,25 @@ const toGovernmentHospital = (
       finalCoordinates?.longitude ??
       null,
 
-    type: "hospital",
+    type: cleanFieldValue(hospital.Hospital_Category) || "hospital",
 
-    /*
-      Government directory does NOT contain
-      live availability information.
-    */
     availableBeds: null,
     availableOxygen: null,
     ambulancesAvailable: null,
 
     verified: true,
+    lastUpdated: null,
 
-    lastUpdated:
-      "2026-08-11",
+    source: "Government Hospital Directory",
 
-    source:
-      "Government Hospital Directory",
-
-    website:
-      hospital.Website || "",
-
-    emergency:
-      hospital.Emergency_Services ||
-      "",
-
-    speciality:
-      (hospital.Specialties || "")
-        .replace(/\s*\n\s*/g, " ")
-        .replace(/\s+/g, " ")
-        .trim(),
-
-    totalBeds:
-      hospital.Total_Num_Beds
-        ? Number(hospital.Total_Num_Beds)
-        : null,
-
-    emergencyServices:
-      hospital.Emergency_Services ||
-      "",
-
-    ambulancePhone:
-      hospital.Ambulance_Phone_No ||
-      "",
-
-    governmentSource:
-      "National Hospital Directory",
-
-    governmentDataUpdated:
-      "2026-08-11",
+    website: website || "",
+    emergency: emergency || "",
+    speciality: speciality || "",
+    totalBeds,
+    emergencyServices: emergency || null,
+    ambulancePhone: ambulancePhone || null,
+    governmentSource: "National Hospital Directory",
+    governmentDataUpdated: null,
   };
 };
 

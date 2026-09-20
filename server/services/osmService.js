@@ -10,8 +10,9 @@ import {
   does not depend on a single server.
 */
 const OVERPASS_SERVERS = [
-  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
   "https://overpass-api.de/api/interpreter",
+  "https://lz4.overpass-api.de/api/interpreter",
+  "https://z.overpass-api.de/api/interpreter",
   "https://overpass.kumi.systems/api/interpreter",
 ];
 
@@ -47,7 +48,7 @@ const requestOverpass = async (query) => {
               "CuraMap/1.0 (hospital discovery app)",
             Referer: "http://localhost:3000/",
           },
-          timeout: 12000,
+          timeout: 4500,
         });
 
         console.log(
@@ -286,15 +287,16 @@ export const getNearbyHospitalsFromOSM =
   async (
     lat,
     lng,
-    radius = 5000
+    radius = 10000
   ) => {
     const query = `
-      [out:json][timeout:25];
+      [out:json][timeout:15];
       (
-        node["amenity"="hospital"]["name"](around:${radius},${lat},${lng});
-        way["amenity"="hospital"]["name"](around:${radius},${lat},${lng});
+        nwr["amenity"="hospital"]["name"](around:${radius},${lat},${lng});
+        nwr["healthcare"="hospital"]["name"](around:${radius},${lat},${lng});
+        nwr["amenity"="clinic"]["name"](around:${radius},${lat},${lng});
       );
-      out center;
+      out center tags;
     `;
 
     console.log(
